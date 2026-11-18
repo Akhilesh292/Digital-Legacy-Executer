@@ -1,5 +1,5 @@
 """
-DIGITAL LEGACY EXECUTOR — COMPLETE SINGLE-FILE APPLICATION
+GRANT SECURITY — COMPLETE SINGLE-FILE APPLICATION
 ============================================================
 
 HOW TO RUN LOCALLY:
@@ -98,13 +98,11 @@ def decrypt_plan(encrypted: str) -> dict:
 # BASE HTML TEMPLATE
 # ============================================================
 
-# NOTE: The {% block content %} has been REMOVED from the base template
-# to fix the "block 'content' defined twice" error.
 BASE_TEMPLATE = """
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Digital Legacy Executor</title>
+  <title>GRANT Security</title>
   <style>
     * { box-sizing: border-box; }
     body { font-family: -apple-system, Arial, sans-serif; max-width: 900px; margin: 0 auto; padding: 20px; background: #f0f2f5; color: #1a1a1a; }
@@ -140,7 +138,7 @@ BASE_TEMPLATE = """
 </head>
 <body>
   <nav>
-    <span class="brand">Digital Legacy</span>
+    <span class="brand">GRANT Security</span>
     <a href="/">Home</a>
     {% if current_user.is_authenticated %}
       <a href="/dashboard">Dashboard</a>
@@ -166,7 +164,7 @@ BASE_TEMPLATE = """
 def index():
     return render_template_string(BASE_TEMPLATE + """
     <div class="card">
-      <h1>Digital Legacy Executor</h1>
+      <h1>GRANT Security</h1>
       <p>Protect your digital life after you're gone. Set up a plan while you're alive, and we'll handle the rest — with your trusted contact's confirmation.</p>
       <p class="muted">This is a working demonstration application. Plans are stored encrypted.</p>
       {% if not current_user.is_authenticated %}
@@ -474,7 +472,7 @@ def confirm(token):
     db.session.commit()
 
     report_text = f"""
-DIGITAL LEGACY EXECUTION REPORT
+GRANT SECURITY EXECUTION REPORT
 User: {plan_data.get('userName')}
 Contact: {plan.contact_email}
 Generated: {datetime.utcnow().strftime('%Y-%m-%d %H:%M')}
