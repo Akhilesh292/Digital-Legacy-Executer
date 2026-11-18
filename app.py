@@ -1,5 +1,5 @@
 """
-GRANT SECURITY — COMPLETE SINGLE-FILE APPLICATION (CYBERSECURITY THEME)
+GRANT SECURITY — CYBERSECURITY THEME (WITH CONTACT PREFERENCES)
 ============================================================
 """
 
@@ -57,11 +57,20 @@ class LegacyPlan(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     encrypted_data = db.Column(db.Text, nullable=False)
-    contact_email = db.Column(db.String(150), nullable=False)
+    
+    # NEW: Primary and Backup Contacts
+    primary_contact = db.Column(db.String(150), nullable=False)
+    backup_contact = db.Column(db.String(150), nullable=True)
+    
     inactivity_days = db.Column(db.Integer, default=180)
     last_activity = db.Column(db.DateTime, default=datetime.utcnow)
     status = db.Column(db.String(50), default="active")
+    
+    # Tracking confirmation
     confirmation_token = db.Column(db.String(100), unique=True, nullable=True)
+    contact_attempted = db.Column(db.String(20), default="primary") # 'primary' or 'backup'
+    verification_sent_at = db.Column(db.DateTime, nullable=True)
+    
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     user = db.relationship('User', backref='plans')
 
@@ -160,11 +169,7 @@ BASE_TEMPLATE = """
       box-shadow: 0 0 10px rgba(0, 255, 65, 0.2);
     }
 
-    .container { 
-      max-width: 1000px; 
-      margin: 3rem auto; 
-      padding: 0 1.5rem; 
-    }
+    .container { max-width: 1000px; margin: 3rem auto; padding: 0 1.5rem; }
 
     .card { 
       background: var(--panel-bg); 
@@ -178,148 +183,48 @@ BASE_TEMPLATE = """
       overflow: hidden;
     }
 
-    .card::before {
-      content: "";
-      position: absolute;
-      top: 0; left: 0; width: 100%; height: 2px;
-      background: rgba(0, 255, 65, 0.3);
-      animation: scanline 4s linear infinite;
-      pointer-events: none;
-    }
-    @keyframes scanline {
-      0% { transform: translateY(-100%); }
-      100% { transform: translateY(100%); }
-    }
-
-    h1 { 
-      color: #ffffff; 
-      font-family: var(--font-mono);
-      font-size: 2rem; 
-      margin-bottom: 1rem; 
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      text-shadow: 0 0 10px rgba(0, 255, 65, 0.3);
-    }
-    h2 { 
-      color: var(--primary-green); 
-      font-family: var(--font-mono);
-      font-size: 1.2rem; 
-      margin: 2rem 0 1rem;
-      border-bottom: 1px solid var(--border);
-      padding-bottom: 0.5rem;
-    }
+    h1 { color: #ffffff; font-family: var(--font-mono); font-size: 2rem; margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 2px; text-shadow: 0 0 10px rgba(0, 255, 65, 0.3); }
+    h2 { color: var(--primary-green); font-family: var(--font-mono); font-size: 1.2rem; margin: 2rem 0 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; }
     p { margin-bottom: 1rem; color: var(--text-muted); font-size: 0.95rem; }
 
     .form-group { margin-bottom: 1.5rem; }
-    label { 
-      display: block; 
-      margin-bottom: 0.5rem; 
-      font-family: var(--font-mono);
-      font-size: 0.85rem; 
-      color: var(--primary-green); 
-      text-transform: uppercase;
-    }
+    label { display: block; margin-bottom: 0.5rem; font-family: var(--font-mono); font-size: 0.85rem; color: var(--primary-green); text-transform: uppercase; }
     input, select { 
-      width: 100%; 
-      padding: 0.75rem 1rem; 
-      border: 1px solid var(--border); 
-      border-radius: 4px; 
-      font-size: 1rem; 
-      font-family: var(--font-mono);
-      background-color: var(--bg-black);
-      color: #ffffff;
-      transition: all 0.2s;
+      width: 100%; padding: 0.75rem 1rem; border: 1px solid var(--border); border-radius: 4px; 
+      font-size: 1rem; font-family: var(--font-mono); background-color: var(--bg-black); color: #ffffff; transition: all 0.2s;
     }
-    input:focus, select:focus { 
-      outline: none; 
-      border-color: var(--primary-green); 
-      box-shadow: 0 0 10px rgba(0, 255, 65, 0.2); 
-    }
-    input::placeholder { color: #484f58; }
+    input:focus, select:focus { outline: none; border-color: var(--primary-green); box-shadow: 0 0 10px rgba(0, 255, 65, 0.2); }
 
     button, .btn { 
-      display: inline-block; 
-      padding: 0.8rem 1.5rem; 
-      background: transparent; 
-      color: var(--primary-green); 
-      border: 1px solid var(--primary-green); 
-      border-radius: 4px; 
-      font-size: 1rem; 
-      font-family: var(--font-mono);
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      cursor: pointer; 
-      text-decoration: none; 
-      transition: all 0.3s;
-      margin-top: 0.5rem;
+      display: inline-block; padding: 0.8rem 1.5rem; background: transparent; color: var(--primary-green); 
+      border: 1px solid var(--primary-green); border-radius: 4px; font-size: 1rem; font-family: var(--font-mono); 
+      font-weight: 600; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; text-decoration: none; 
+      transition: all 0.3s; margin-top: 0.5rem;
     }
-    button:hover, .btn:hover { 
-      background: rgba(0, 255, 65, 0.1);
-      box-shadow: 0 0 15px rgba(0, 255, 65, 0.4);
-    }
-    .btn-green { 
-      background: var(--primary-green); 
-      color: #000000; 
-    }
-    .btn-green:hover { 
-      background: #ffffff; 
-      border-color: #ffffff;
-      box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
-    }
+    button:hover, .btn:hover { background: rgba(0, 255, 65, 0.1); box-shadow: 0 0 15px rgba(0, 255, 65, 0.4); }
+    .btn-green { background: var(--primary-green); color: #000000; }
+    .btn-green:hover { background: #ffffff; border-color: #ffffff; box-shadow: 0 0 20px rgba(255, 255, 255, 0.5); }
 
-    .flash { 
-      padding: 1rem; 
-      border-radius: 4px; 
-      margin-bottom: 1.5rem; 
-      font-family: var(--font-mono);
-      font-size: 0.9rem; 
-      border: 1px solid;
-      display: flex;
-      align-items: center;
-    }
+    .flash { padding: 1rem; border-radius: 4px; margin-bottom: 1.5rem; font-family: var(--font-mono); font-size: 0.9rem; border: 1px solid; display: flex; align-items: center; }
     .flash.success { border-color: var(--primary-green); color: var(--primary-green); background: rgba(0, 255, 65, 0.05); }
     .flash.error { border-color: var(--danger); color: var(--danger); background: rgba(255, 51, 102, 0.05); }
     .flash.info { border-color: #58a6ff; color: #58a6ff; background: rgba(88, 166, 255, 0.05); }
 
     .plan-row { 
-      display: flex; 
-      justify-content: space-between; 
-      align-items: center; 
-      padding: 1.25rem; 
-      background: var(--bg-black);
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      margin-bottom: 1rem; 
-      transition: border-color 0.2s;
-      font-family: var(--font-mono);
+      display: flex; justify-content: space-between; align-items: center; padding: 1.25rem; 
+      background: var(--bg-black); border: 1px solid var(--border); border-radius: 4px; 
+      margin-bottom: 1rem; transition: border-color 0.2s; font-family: var(--font-mono);
     }
     .plan-row:hover { border-color: var(--primary-green); }
     
-    .badge { 
-      display: inline-block; 
-      padding: 0.25rem 0.75rem; 
-      border-radius: 4px; 
-      font-size: 0.75rem; 
-      font-weight: 600; 
-      text-transform: uppercase;
-      font-family: var(--font-mono);
-    }
+    .badge { display: inline-block; padding: 0.25rem 0.75rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; font-family: var(--font-mono); }
     .badge-active { border: 1px solid var(--primary-green); color: var(--primary-green); }
     .badge-pending_verification { border: 1px solid var(--warning); color: var(--warning); }
     .badge-executed { border: 1px solid #58a6ff; color: #58a6ff; }
     
     pre { 
-      background: #000000; 
-      color: var(--primary-green); 
-      padding: 1.5rem; 
-      border-radius: 4px; 
-      overflow-x: auto; 
-      font-family: var(--font-mono);
-      font-size: 0.85rem; 
-      line-height: 1.6; 
-      border: 1px solid var(--border);
-      border-left: 3px solid var(--primary-green);
+      background: #000000; color: var(--primary-green); padding: 1.5rem; border-radius: 4px; overflow-x: auto; 
+      font-family: var(--font-mono); font-size: 0.85rem; line-height: 1.6; border: 1px solid var(--border); border-left: 3px solid var(--primary-green);
     }
 
     .muted { color: var(--text-muted); font-size: 0.85rem; display: block; margin-top: 0.25rem; }
@@ -354,9 +259,7 @@ BASE_TEMPLATE = """
   <div class="container">
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% for category, message in messages %}
-        <div class="flash {{ category }}">
-          > {{ message }}
-        </div>
+        <div class="flash {{ category }}">> {{ message }}</div>
       {% endfor %}
     {% endwith %}
 """
@@ -410,18 +313,9 @@ def signup():
       <h1>Register Operator</h1>
       <p style="font-family: var(--font-mono);">> ENTER NEW IDENTITY DETAILS</p>
       <form method="POST" style="margin-top: 2rem;">
-        <div class="form-group">
-          <label>> Full Name</label>
-          <input name="name" required placeholder="e.g., John Doe">
-        </div>
-        <div class="form-group">
-          <label>> Email Address</label>
-          <input name="email" type="email" required placeholder="operator@domain.com">
-        </div>
-        <div class="form-group">
-          <label>> Access Key (Password)</label>
-          <input name="password" type="password" required minlength="6" placeholder="********">
-        </div>
+        <div class="form-group"><label>> Full Name</label><input name="name" required></div>
+        <div class="form-group"><label>> Email Address</label><input name="email" type="email" required></div>
+        <div class="form-group"><label>> Access Key</label><input name="password" type="password" required minlength="6"></div>
         <button type="submit" class="btn-green" style="width: 100%;">[ INITIALIZE ]</button>
       </form>
       <p class="muted" style="text-align: center; margin-top: 1.5rem; font-family: var(--font-mono);">> Existing user? <a href="/login" style="color: var(--primary-green); text-decoration: none;">[ LOGIN ]</a></p>
@@ -446,14 +340,8 @@ def login():
       <h1>System Login</h1>
       <p style="font-family: var(--font-mono);">> AUTHENTICATE TO CONTINUE</p>
       <form method="POST" style="margin-top: 2rem;">
-        <div class="form-group">
-          <label>> Email Address</label>
-          <input name="email" type="email" required placeholder="operator@domain.com">
-        </div>
-        <div class="form-group">
-          <label>> Access Key</label>
-          <input name="password" type="password" required placeholder="********">
-        </div>
+        <div class="form-group"><label>> Email Address</label><input name="email" type="email" required></div>
+        <div class="form-group"><label>> Access Key</label><input name="password" type="password" required></div>
         <button type="submit" class="btn-green" style="width: 100%;">[ AUTHENTICATE ]</button>
       </form>
       <p class="muted" style="text-align: center; margin-top: 1.5rem; font-family: var(--font-mono);">> Unregistered? <a href="/signup" style="color: var(--primary-green); text-decoration: none;">[ REGISTER ]</a></p>
@@ -484,13 +372,21 @@ def dashboard():
       {% if plans %}
         <h2 style="margin-top: 0;">ACTIVE PROTOCOLS</h2>
         {% for plan in plans %}
-          <div class="plan-row">
-            <div>
+          <div class="plan-row" style="flex-direction: column; align-items: flex-start;">
+            <div style="width: 100%; display: flex; justify-content: space-between; align-items: center;">
               <strong style="font-size: 1.1rem; color: #fff;">[ PLAN_ID: {{ plan.id }} ]</strong>
-              <span class="muted">TARGET_CONTACT: {{ plan.contact_email }}</span>
-              <span class="muted">INACTIVITY_THRESHOLD: {{ plan.inactivity_days }} days | LAST_CHECKIN: {{ plan.last_activity.strftime('%Y-%m-%d') }}</span>
+              <span class="badge badge-{{ plan.status }}">{{ plan.status.replace('_', ' ') }}</span>
             </div>
-            <span class="badge badge-{{ plan.status }}">{{ plan.status.replace('_', ' ') }}</span>
+            <div style="margin-top: 1rem; width: 100%;">
+              <span class="muted">PRIMARY_CONTACT: {{ plan.primary_contact }}</span>
+              {% if plan.backup_contact %}
+                <span class="muted">BACKUP_CONTACT: {{ plan.backup_contact }}</span>
+              {% endif %}
+              <span class="muted">INACTIVITY_THRESHOLD: {{ plan.inactivity_days }} days | LAST_CHECKIN: {{ plan.last_activity.strftime('%Y-%m-%d') }}</span>
+              {% if plan.status == 'pending_verification' %}
+                <span class="muted" style="color: var(--warning); margin-top: 0.5rem;">> CURRENTLY AWAITING: {{ plan.contact_attempted | upper }} CONTACT</span>
+              {% endif %}
+            </div>
           </div>
         {% endfor %}
         
@@ -510,7 +406,8 @@ def dashboard():
 @login_required
 def create_plan():
     if request.method == 'POST':
-        contact_email = request.form['contact_email'].strip().lower()
+        primary_contact = request.form['primary_contact'].strip().lower()
+        backup_contact = request.form.get('backup_contact', '').strip().lower()
         inactivity_days = int(request.form['inactivity_days'])
 
         platforms = request.form.getlist('platform[]')
@@ -534,7 +431,8 @@ def create_plan():
         plan = LegacyPlan(
             user_id=current_user.id,
             encrypted_data=encrypt_plan(plan_data),
-            contact_email=contact_email,
+            primary_contact=primary_contact,
+            backup_contact=backup_contact if backup_contact else None,
             inactivity_days=inactivity_days,
             last_activity=datetime.utcnow(),
             status="active"
@@ -549,19 +447,26 @@ def create_plan():
       <h1>Initialize Protocol</h1>
       <p style="font-family: var(--font-mono);">> CONFIGURE LEGACY DIRECTIVES. DATA WILL BE ENCRYPTED.</p>
       <form method="POST" style="margin-top: 2rem;">
+        
+        <h2>Contact Preferences (Escalation Path)</h2>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
           <div class="form-group" style="margin-bottom: 0;">
-            <label>> Emergency Contact (Email)</label>
-            <input name="contact_email" type="email" required placeholder="trusted@domain.com">
+            <label>> Primary Contact (Required)</label>
+            <input name="primary_contact" type="email" required placeholder="primary@domain.com">
           </div>
           <div class="form-group" style="margin-bottom: 0;">
-            <label>> Inactivity Threshold (Days)</label>
-            <input name="inactivity_days" type="number" value="180" required min="30" max="3650">
+            <label>> Backup Contact (Optional)</label>
+            <input name="backup_contact" type="email" placeholder="backup@domain.com">
+            <span class="muted" style="text-transform: none; font-family: var(--font-sans);">Only used if the primary contact fails to respond within 7 days.</span>
           </div>
         </div>
 
+        <div class="form-group" style="margin-top: 1.5rem;">
+          <label>> Inactivity Threshold (Days)</label>
+          <input name="inactivity_days" type="number" value="180" required min="30" max="3650">
+        </div>
+
         <h2>Target Assets</h2>
-        
         <div id="accounts">
           <div class="account-block" style="background: rgba(0,0,0,0.3); padding: 1.5rem; border: 1px solid var(--border); border-radius: 4px; margin-bottom: 1rem;">
             <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem;">
@@ -634,23 +539,59 @@ def create_plan():
 @app.route('/run_check')
 @login_required
 def run_check():
-    plans = LegacyPlan.query.filter_by(user_id=current_user.id, status="active").all()
+    plans = LegacyPlan.query.filter_by(user_id=current_user.id).all()
     results = []
 
     for plan in plans:
         days_inactive = (datetime.utcnow() - plan.last_activity).days
-        if days_inactive >= plan.inactivity_days:
+        
+        # If plan is active and threshold is met
+        if plan.status == "active" and days_inactive >= plan.inactivity_days:
             token = secrets.token_urlsafe(32)
             plan.confirmation_token = token
             plan.status = "pending_verification"
+            plan.contact_attempted = "primary"
+            plan.verification_sent_at = datetime.utcnow()
             db.session.commit()
             results.append({
                 "plan_id": plan.id,
                 "action": "VERIFICATION_TRIGGERED",
-                "contact": plan.contact_email,
+                "contact": plan.primary_contact,
+                "type": "Primary Contact",
                 "token": token
             })
-        else:
+            
+        # If plan is already pending verification, check if it's time to escalate
+        elif plan.status == "pending_verification":
+            days_since_sent = (datetime.utcnow() - plan.verification_sent_at).days
+            
+            if plan.contact_attempted == "primary" and days_since_sent >= 7 and plan.backup_contact:
+                # Escalate to backup
+                token = secrets.token_urlsafe(32)
+                plan.confirmation_token = token
+                plan.contact_attempted = "backup"
+                plan.verification_sent_at = datetime.utcnow()
+                db.session.commit()
+                results.append({
+                    "plan_id": plan.id,
+                    "action": "ESCALATED_TO_BACKUP",
+                    "contact": plan.backup_contact,
+                    "type": "Backup Contact",
+                    "token": token
+                })
+            else:
+                # Still waiting on current contact
+                contact_type = "Primary" if plan.contact_attempted == "primary" else "Backup"
+                contact_email = plan.primary_contact if plan.contact_attempted == "primary" else plan.backup_contact
+                results.append({
+                    "plan_id": plan.id,
+                    "action": f"AWAITING_{contact_type.upper()}_CONFIRMATION",
+                    "contact": contact_email,
+                    "type": f"{contact_type} Contact",
+                    "token": plan.confirmation_token
+                })
+                
+        elif plan.status == "active":
             results.append({
                 "plan_id": plan.id,
                 "action": "TARGET_ACTIVE",
@@ -667,18 +608,24 @@ def run_check():
         {% for r in results %}
           <div class="plan-row" style="flex-direction: column; align-items: flex-start;">
             <strong style="font-size: 1.1rem; color: #fff;">[ PLAN_ID: {{ r.plan_id }} ]</strong>
-            <span class="muted" style="margin-top: 0.5rem; font-weight: 600; font-family: var(--font-mono); color: {% if r.get('contact') %}var(--primary-green){% else %}var(--text-muted){% endif %};">
+            <span class="muted" style="margin-top: 0.5rem; font-weight: 600; font-family: var(--font-mono); color: {% if 'AWAITING' in r.action %}var(--warning){% elif r.get('contact') %}var(--primary-green){% else %}var(--text-muted){% endif %};">
               > STATUS: {{ r.action }}
             </span>
+            
             {% if r.get('contact') %}
-              <div style="background: rgba(0, 255, 65, 0.05); border: 1px solid var(--primary-green); padding: 1.5rem; border-radius: 4px; width: 100%; margin-top: 1rem;">
-                <p class="muted" style="color: var(--primary-green); margin-bottom: 1rem; font-family: var(--font-mono);">
-                  > PAYLOAD SENT TO: {{ r.contact }}<br>
-                  > AWAITING HUMAN CONFIRMATION.
+              <div style="background: rgba(0, 255, 65, 0.05); border: 1px solid var(--border); padding: 1.5rem; border-radius: 4px; width: 100%; margin-top: 1rem;">
+                <p class="muted" style="color: var(--text-main); margin-bottom: 1rem; font-family: var(--font-mono);">
+                  > TARGET ({{ r.type }}): {{ r.contact }}<br>
+                  {% if 'AWAITING' in r.action %}
+                  > WAITING 7 DAYS TO ESCALATE TO BACKUP (IF CONFIGURED).
+                  {% else %}
+                  > PAYLOAD SENT. AWAITING HUMAN CONFIRMATION.
+                  {% endif %}
                 </p>
                 <a href="/confirm/{{ r.token }}" class="btn btn-green" style="margin-top: 0.5rem; width: 100%; text-align: center; font-size: 0.9rem;">[ SIMULATE_CONFIRMATION ]</a>
               </div>
             {% endif %}
+            
             {% if r.get('days_left') %}
               <p class="muted" style="margin-top: 0.5rem; font-family: var(--font-mono);">> {{ r.days_left }} days remaining until threshold.</p>
             {% endif %}
@@ -713,6 +660,10 @@ def confirm(token):
 
     plan_data = decrypt_plan(plan.encrypted_data)
     actions = []
+    
+    # Determine which contact gets the report
+    receiving_contact = plan.primary_contact if plan.contact_attempted == 'primary' else plan.backup_contact
+
     for acc in plan_data.get("accounts", []):
         platform = acc["platform"]
         action = acc["action"]
@@ -722,53 +673,5 @@ def confirm(token):
             detail = "Submit account deletion request via Facebook Memorialization Settings."
             status = "REQUEST_GENERATED"
         elif platform == "Google Photos" and action == "Transfer to contact":
-            detail = f"Export {filter_val or 'all photos'} via Google Takeout. Share with {plan.contact_email}."
-            status = "EXPORT_READY"
-        elif platform == "Google Photos" and action == "Archive privately":
-            detail = f"Export {filter_val or 'all photos'} to encrypted archive. Do not share."
-            status = "ARCHIVE_READY"
-        elif platform == "Email" and action == "Delete":
-            detail = "Submit account closure request with death certificate."
-            status = "REQUEST_GENERATED"
-        else:
-            detail = f"Manual action: {action} for {platform}."
-            status = "PENDING_MANUAL"
-
-        actions.append({"platform": platform, "filter": filter_val, "action": action, "detail": detail, "status": status})
-
-    plan.status = "executed"
-    db.session.commit()
-
-    report_text = f"""
-GRANT SECURITY EXECUTION REPORT
-========================================
-User: {plan_data.get('userName')}
-Contact: {plan.contact_email}
-Generated: {datetime.utcnow().strftime('%Y-%m-%d %H:%M')}
-Status: EXECUTION COMPLETE
-========================================
-
-ACTIONS:
-"""
-    for i, a in enumerate(actions, 1):
-        report_text += f"\n{i}. {a['platform']} ({a['filter'] or 'no filter'})\n   Action: {a['action']}\n   Detail: {a['detail']}\n   Status: {a['status']}\n"
-
-    return render_template_string(BASE_TEMPLATE + """
-    <div class="card">
-      <h1 style="color: var(--primary-green);">Execution Successful</h1>
-      <p style="font-family: var(--font-mono);">> THE PLAN HAS BEEN SUCCESSFULLY EXECUTED. FINAL REPORT:</p>
-      <pre>{{ report }}</pre>
-      <a href="/" class="btn" style="margin-top: 2rem;">[ RETURN TO HOME ]</a>
-    </div>
-    """, report=report_text)
-
-# ============================================================
-# INITIALIZE AND RUN
-# ============================================================
-
-with app.app_context():
-    db.create_all()
-
-if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port)
+            detail = f"Export {filter_val or 'all photos'} via Google Takeout. Share with {receiving_contact}."
+            status = "EXPORT_
