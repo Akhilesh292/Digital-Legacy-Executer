@@ -58,7 +58,6 @@ class LegacyPlan(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     encrypted_data = db.Column(db.Text, nullable=False)
     
-    # NEW: Primary and Backup Contacts
     primary_contact = db.Column(db.String(150), nullable=False)
     backup_contact = db.Column(db.String(150), nullable=True)
     
@@ -66,9 +65,8 @@ class LegacyPlan(db.Model):
     last_activity = db.Column(db.DateTime, default=datetime.utcnow)
     status = db.Column(db.String(50), default="active")
     
-    # Tracking confirmation
     confirmation_token = db.Column(db.String(100), unique=True, nullable=True)
-    contact_attempted = db.Column(db.String(20), default="primary") # 'primary' or 'backup'
+    contact_attempted = db.Column(db.String(20), default="primary")
     verification_sent_at = db.Column(db.DateTime, nullable=True)
     
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
@@ -457,7 +455,7 @@ def create_plan():
           <div class="form-group" style="margin-bottom: 0;">
             <label>> Backup Contact (Optional)</label>
             <input name="backup_contact" type="email" placeholder="backup@domain.com">
-            <span class="muted" style="text-transform: none; font-family: var(--font-sans);">Only used if the primary contact fails to respond within 7 days.</span>
+            <span class="muted" style="text-transform: none; font-family: var(--font-sans); color: var(--text-muted);">Only used if the primary contact fails to respond within 7 days.</span>
           </div>
         </div>
 
@@ -566,7 +564,6 @@ def run_check():
             days_since_sent = (datetime.utcnow() - plan.verification_sent_at).days
             
             if plan.contact_attempted == "primary" and days_since_sent >= 7 and plan.backup_contact:
-                # Escalate to backup
                 token = secrets.token_urlsafe(32)
                 plan.confirmation_token = token
                 plan.contact_attempted = "backup"
@@ -580,7 +577,6 @@ def run_check():
                     "token": token
                 })
             else:
-                # Still waiting on current contact
                 contact_type = "Primary" if plan.contact_attempted == "primary" else "Backup"
                 contact_email = plan.primary_contact if plan.contact_attempted == "primary" else plan.backup_contact
                 results.append({
@@ -661,7 +657,6 @@ def confirm(token):
     plan_data = decrypt_plan(plan.encrypted_data)
     actions = []
     
-    # Determine which contact gets the report
     receiving_contact = plan.primary_contact if plan.contact_attempted == 'primary' else plan.backup_contact
 
     for acc in plan_data.get("accounts", []):
@@ -674,4 +669,10 @@ def confirm(token):
             status = "REQUEST_GENERATED"
         elif platform == "Google Photos" and action == "Transfer to contact":
             detail = f"Export {filter_val or 'all photos'} via Google Takeout. Share with {receiving_contact}."
-            status = "EXPORT_
+            status = "EXPORT_READY"
+        elif platform == "Google Photos" and action == "Archive privately":
+            detail = f"Export {filter_val or 'all photos'} to encrypted archive. Do not share."
+            status = "ARCHIVE_READY"
+        elif platform == "Email" and action == "Delete":
+            detail = "Submit account closure request with death certificate."
+            status = "
