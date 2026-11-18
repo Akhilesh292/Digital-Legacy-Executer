@@ -1,21 +1,6 @@
 """
 GRANT SECURITY — COMPLETE SINGLE-FILE APPLICATION (CYBERSECURITY THEME)
 ============================================================
-
-HOW TO RUN LOCALLY:
-1. Install dependencies:
-   pip install flask flask-login flask-sqlalchemy cryptography gunicorn
-
-2. Run the app:
-   python app.py
-
-3. Open your browser to:
-   http://localhost:5000
-
-FOR RENDER DEPLOYMENT:
-- Build Command: pip install -r requirements.txt
-- Start Command: gunicorn app:app
-- Add environment variable: SECRET_KEY = any_random_string
 """
 
 import os
@@ -105,14 +90,13 @@ BASE_TEMPLATE = """
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>GRANT Security | Ops Center</title>
-  <!-- Google Fonts: Fira Code for that terminal look -->
   <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
   <style>
     :root {
       --bg-black: #050505;
       --bg-dark: #0d1117;
       --panel-bg: #161b22;
-      --primary-green: #00ff41; /* Matrix Green */
+      --primary-green: #00ff41;
       --primary-green-dim: #00b32c;
       --text-main: #c9d1d9;
       --text-muted: #8b949e;
@@ -137,7 +121,6 @@ BASE_TEMPLATE = """
       min-height: 100vh;
     }
 
-    /* Top Navigation Bar */
     nav { 
       background-color: var(--bg-dark); 
       padding: 1rem 2rem; 
@@ -177,14 +160,12 @@ BASE_TEMPLATE = """
       box-shadow: 0 0 10px rgba(0, 255, 65, 0.2);
     }
 
-    /* Layout Container */
     .container { 
       max-width: 1000px; 
       margin: 3rem auto; 
       padding: 0 1.5rem; 
     }
 
-    /* Terminal Panels */
     .card { 
       background: var(--panel-bg); 
       padding: 2.5rem; 
@@ -195,14 +176,8 @@ BASE_TEMPLATE = """
       margin-bottom: 2rem;
       position: relative;
       overflow: hidden;
-      animation: scanline 8s linear infinite;
     }
 
-    /* Subtle scanning effect */
-    @keyframes scanline {
-      0% { transform: translateY(-100%); }
-      100% { transform: translateY(100%); }
-    }
     .card::before {
       content: "";
       position: absolute;
@@ -210,6 +185,10 @@ BASE_TEMPLATE = """
       background: rgba(0, 255, 65, 0.3);
       animation: scanline 4s linear infinite;
       pointer-events: none;
+    }
+    @keyframes scanline {
+      0% { transform: translateY(-100%); }
+      100% { transform: translateY(100%); }
     }
 
     h1 { 
@@ -231,7 +210,6 @@ BASE_TEMPLATE = """
     }
     p { margin-bottom: 1rem; color: var(--text-muted); font-size: 0.95rem; }
 
-    /* Forms */
     .form-group { margin-bottom: 1.5rem; }
     label { 
       display: block; 
@@ -259,7 +237,6 @@ BASE_TEMPLATE = """
     }
     input::placeholder { color: #484f58; }
 
-    /* Buttons */
     button, .btn { 
       display: inline-block; 
       padding: 0.8rem 1.5rem; 
@@ -290,10 +267,7 @@ BASE_TEMPLATE = """
       border-color: #ffffff;
       box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
     }
-    .btn-danger { color: var(--danger); border-color: var(--danger); }
-    .btn-danger:hover { background: rgba(255, 51, 102, 0.1); box-shadow: 0 0 15px rgba(255, 51, 102, 0.4); }
 
-    /* Alerts */
     .flash { 
       padding: 1rem; 
       border-radius: 4px; 
@@ -308,7 +282,6 @@ BASE_TEMPLATE = """
     .flash.error { border-color: var(--danger); color: var(--danger); background: rgba(255, 51, 102, 0.05); }
     .flash.info { border-color: #58a6ff; color: #58a6ff; background: rgba(88, 166, 255, 0.05); }
 
-    /* Dashboard Items */
     .plan-row { 
       display: flex; 
       justify-content: space-between; 
@@ -336,7 +309,6 @@ BASE_TEMPLATE = """
     .badge-pending_verification { border: 1px solid var(--warning); color: var(--warning); }
     .badge-executed { border: 1px solid #58a6ff; color: #58a6ff; }
     
-    /* Code Block for Report */
     pre { 
       background: #000000; 
       color: var(--primary-green); 
@@ -352,7 +324,6 @@ BASE_TEMPLATE = """
 
     .muted { color: var(--text-muted); font-size: 0.85rem; display: block; margin-top: 0.25rem; }
 
-    /* Mobile */
     @media (max-width: 600px) {
       nav { flex-direction: column; gap: 1rem; }
       .nav-links { flex-wrap: wrap; justify-content: center; }
@@ -619,7 +590,7 @@ def create_plan():
           </div>
         </div>
         
-        <button type="button" onclick="addRow()" class="btn-outline" style="margin-bottom: 2rem;">[ + ADD TARGET ]</button>
+        <button type="button" onclick="addRow()" class="btn" style="margin-bottom: 2rem;">[ + ADD TARGET ]</button>
         <br>
         <button type="submit" class="btn-green" style="width: 100%; font-size: 1.1rem; padding: 1rem;">[ EXECUTE SAVE_PROTOCOL ]</button>
       </form>
@@ -780,4 +751,24 @@ Status: EXECUTION COMPLETE
 ACTIONS:
 """
     for i, a in enumerate(actions, 1):
-        report_text += f"\n{i}. {a['platform']} ({a['filter'] or 'no filter'})\n   Action: {a['action']}\n   Detail: {a['detail']}\n   Status: {a
+        report_text += f"\n{i}. {a['platform']} ({a['filter'] or 'no filter'})\n   Action: {a['action']}\n   Detail: {a['detail']}\n   Status: {a['status']}\n"
+
+    return render_template_string(BASE_TEMPLATE + """
+    <div class="card">
+      <h1 style="color: var(--primary-green);">Execution Successful</h1>
+      <p style="font-family: var(--font-mono);">> THE PLAN HAS BEEN SUCCESSFULLY EXECUTED. FINAL REPORT:</p>
+      <pre>{{ report }}</pre>
+      <a href="/" class="btn" style="margin-top: 2rem;">[ RETURN TO HOME ]</a>
+    </div>
+    """, report=report_text)
+
+# ============================================================
+# INITIALIZE AND RUN
+# ============================================================
+
+with app.app_context():
+    db.create_all()
+
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
