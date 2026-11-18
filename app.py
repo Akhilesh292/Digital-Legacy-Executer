@@ -1,5 +1,5 @@
 """
-GRANT SECURITY — COMPLETE SINGLE-FILE APPLICATION
+GRANT SECURITY — COMPLETE SINGLE-FILE APPLICATION (CYBERSECURITY THEME)
 ============================================================
 
 HOW TO RUN LOCALLY:
@@ -95,65 +95,299 @@ def decrypt_plan(encrypted: str) -> dict:
     return json.loads(fernet.decrypt(encrypted.encode()).decode())
 
 # ============================================================
-# BASE HTML TEMPLATE
+# BASE HTML TEMPLATE (CYBERSECURITY THEME)
 # ============================================================
 
 BASE_TEMPLATE = """
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>GRANT Security</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GRANT Security | Ops Center</title>
+  <!-- Google Fonts: Fira Code for that terminal look -->
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
   <style>
-    * { box-sizing: border-box; }
-    body { font-family: -apple-system, Arial, sans-serif; max-width: 900px; margin: 0 auto; padding: 20px; background: #f0f2f5; color: #1a1a1a; }
-    nav { background: #1a252f; padding: 15px 20px; border-radius: 8px; margin-bottom: 25px; display: flex; align-items: center; flex-wrap: wrap; }
-    nav .brand { color: #4ade80; font-weight: bold; font-size: 1.2em; margin-right: 30px; }
-    nav a { color: #cbd5e1; margin-right: 18px; text-decoration: none; font-size: 0.95em; }
-    nav a:hover { color: white; }
-    .card { background: white; padding: 25px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 20px; }
-    h1 { color: #1a252f; margin-top: 0; }
-    h2 { color: #334155; font-size: 1.2em; }
-    label { display: block; margin: 12px 0 4px; font-weight: 600; font-size: 0.9em; color: #475569; }
-    input, select { width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 1em; }
-    input:focus, select:focus { outline: none; border-color: #4ade80; box-shadow: 0 0 0 3px rgba(74,222,128,0.1); }
-    button, .btn { display: inline-block; padding: 11px 22px; background: #1a252f; color: white; border: none; border-radius: 6px; font-size: 0.95em; cursor: pointer; text-decoration: none; margin-top: 12px; }
-    button:hover, .btn:hover { background: #0f1720; }
-    .btn-green { background: #16a34a; }
-    .btn-green:hover { background: #15803d; }
-    .flash { padding: 12px 16px; border-radius: 6px; margin-bottom: 15px; font-size: 0.9em; }
-    .flash.success { background: #dcfce7; color: #166534; border-left: 4px solid #16a34a; }
-    .flash.error { background: #fee2e2; color: #991b1b; border-left: 4px solid #dc2626; }
-    .flash.info { background: #dbeafe; color: #1e40af; border-left: 4px solid #3b82f6; }
-    .plan-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #e2e8f0; flex-wrap: wrap; gap: 10px; }
-    .plan-row:last-child { border-bottom: none; }
-    .badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 0.75em; font-weight: 600; }
-    .badge-active { background: #dcfce7; color: #166534; }
-    .badge-pending_verification { background: #fef3c7; color: #92400e; }
-    .badge-executed { background: #dbeafe; color: #1e40af; }
-    .badge-confirmed { background: #e0e7ff; color: #3730a3; }
-    pre { background: #1a252f; color: #e2e8f0; padding: 18px; border-radius: 6px; overflow-x: auto; font-size: 0.85em; line-height: 1.5; }
-    .account-block { background: #f8fafc; padding: 12px; border-radius: 6px; margin-bottom: 8px; border: 1px solid #e2e8f0; }
-    .muted { color: #64748b; font-size: 0.85em; }
+    :root {
+      --bg-black: #050505;
+      --bg-dark: #0d1117;
+      --panel-bg: #161b22;
+      --primary-green: #00ff41; /* Matrix Green */
+      --primary-green-dim: #00b32c;
+      --text-main: #c9d1d9;
+      --text-muted: #8b949e;
+      --border: #30363d;
+      --danger: #ff3366;
+      --warning: #ffcc00;
+      --font-mono: 'Fira Code', monospace;
+      --font-sans: 'Inter', sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body { 
+      font-family: var(--font-sans); 
+      background-color: var(--bg-black); 
+      background-image: 
+        linear-gradient(rgba(0, 255, 65, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 255, 65, 0.03) 1px, transparent 1px);
+      background-size: 30px 30px;
+      color: var(--text-main); 
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* Top Navigation Bar */
+    nav { 
+      background-color: var(--bg-dark); 
+      padding: 1rem 2rem; 
+      display: flex; 
+      align-items: center; 
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    }
+    .brand { 
+      color: var(--primary-green); 
+      font-family: var(--font-mono);
+      font-weight: 600; 
+      font-size: 1.3rem; 
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .nav-links { display: flex; gap: 1.5rem; align-items: center; font-family: var(--font-mono); }
+    nav a:not(.brand) { 
+      color: var(--text-main); 
+      text-decoration: none; 
+      font-size: 0.9rem; 
+      transition: all 0.2s;
+      padding: 0.5rem;
+      border-radius: 4px;
+    }
+    nav a:not(.brand):hover { 
+      color: var(--primary-green); 
+      background: rgba(0, 255, 65, 0.1);
+      box-shadow: 0 0 10px rgba(0, 255, 65, 0.2);
+    }
+
+    /* Layout Container */
+    .container { 
+      max-width: 1000px; 
+      margin: 3rem auto; 
+      padding: 0 1.5rem; 
+    }
+
+    /* Terminal Panels */
+    .card { 
+      background: var(--panel-bg); 
+      padding: 2.5rem; 
+      border-radius: 8px; 
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--primary-green);
+      box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+      margin-bottom: 2rem;
+      position: relative;
+      overflow: hidden;
+      animation: scanline 8s linear infinite;
+    }
+
+    /* Subtle scanning effect */
+    @keyframes scanline {
+      0% { transform: translateY(-100%); }
+      100% { transform: translateY(100%); }
+    }
+    .card::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 2px;
+      background: rgba(0, 255, 65, 0.3);
+      animation: scanline 4s linear infinite;
+      pointer-events: none;
+    }
+
+    h1 { 
+      color: #ffffff; 
+      font-family: var(--font-mono);
+      font-size: 2rem; 
+      margin-bottom: 1rem; 
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      text-shadow: 0 0 10px rgba(0, 255, 65, 0.3);
+    }
+    h2 { 
+      color: var(--primary-green); 
+      font-family: var(--font-mono);
+      font-size: 1.2rem; 
+      margin: 2rem 0 1rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.5rem;
+    }
+    p { margin-bottom: 1rem; color: var(--text-muted); font-size: 0.95rem; }
+
+    /* Forms */
+    .form-group { margin-bottom: 1.5rem; }
+    label { 
+      display: block; 
+      margin-bottom: 0.5rem; 
+      font-family: var(--font-mono);
+      font-size: 0.85rem; 
+      color: var(--primary-green); 
+      text-transform: uppercase;
+    }
+    input, select { 
+      width: 100%; 
+      padding: 0.75rem 1rem; 
+      border: 1px solid var(--border); 
+      border-radius: 4px; 
+      font-size: 1rem; 
+      font-family: var(--font-mono);
+      background-color: var(--bg-black);
+      color: #ffffff;
+      transition: all 0.2s;
+    }
+    input:focus, select:focus { 
+      outline: none; 
+      border-color: var(--primary-green); 
+      box-shadow: 0 0 10px rgba(0, 255, 65, 0.2); 
+    }
+    input::placeholder { color: #484f58; }
+
+    /* Buttons */
+    button, .btn { 
+      display: inline-block; 
+      padding: 0.8rem 1.5rem; 
+      background: transparent; 
+      color: var(--primary-green); 
+      border: 1px solid var(--primary-green); 
+      border-radius: 4px; 
+      font-size: 1rem; 
+      font-family: var(--font-mono);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      cursor: pointer; 
+      text-decoration: none; 
+      transition: all 0.3s;
+      margin-top: 0.5rem;
+    }
+    button:hover, .btn:hover { 
+      background: rgba(0, 255, 65, 0.1);
+      box-shadow: 0 0 15px rgba(0, 255, 65, 0.4);
+    }
+    .btn-green { 
+      background: var(--primary-green); 
+      color: #000000; 
+    }
+    .btn-green:hover { 
+      background: #ffffff; 
+      border-color: #ffffff;
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+    }
+    .btn-danger { color: var(--danger); border-color: var(--danger); }
+    .btn-danger:hover { background: rgba(255, 51, 102, 0.1); box-shadow: 0 0 15px rgba(255, 51, 102, 0.4); }
+
+    /* Alerts */
+    .flash { 
+      padding: 1rem; 
+      border-radius: 4px; 
+      margin-bottom: 1.5rem; 
+      font-family: var(--font-mono);
+      font-size: 0.9rem; 
+      border: 1px solid;
+      display: flex;
+      align-items: center;
+    }
+    .flash.success { border-color: var(--primary-green); color: var(--primary-green); background: rgba(0, 255, 65, 0.05); }
+    .flash.error { border-color: var(--danger); color: var(--danger); background: rgba(255, 51, 102, 0.05); }
+    .flash.info { border-color: #58a6ff; color: #58a6ff; background: rgba(88, 166, 255, 0.05); }
+
+    /* Dashboard Items */
+    .plan-row { 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      padding: 1.25rem; 
+      background: var(--bg-black);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      margin-bottom: 1rem; 
+      transition: border-color 0.2s;
+      font-family: var(--font-mono);
+    }
+    .plan-row:hover { border-color: var(--primary-green); }
+    
+    .badge { 
+      display: inline-block; 
+      padding: 0.25rem 0.75rem; 
+      border-radius: 4px; 
+      font-size: 0.75rem; 
+      font-weight: 600; 
+      text-transform: uppercase;
+      font-family: var(--font-mono);
+    }
+    .badge-active { border: 1px solid var(--primary-green); color: var(--primary-green); }
+    .badge-pending_verification { border: 1px solid var(--warning); color: var(--warning); }
+    .badge-executed { border: 1px solid #58a6ff; color: #58a6ff; }
+    
+    /* Code Block for Report */
+    pre { 
+      background: #000000; 
+      color: var(--primary-green); 
+      padding: 1.5rem; 
+      border-radius: 4px; 
+      overflow-x: auto; 
+      font-family: var(--font-mono);
+      font-size: 0.85rem; 
+      line-height: 1.6; 
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--primary-green);
+    }
+
+    .muted { color: var(--text-muted); font-size: 0.85rem; display: block; margin-top: 0.25rem; }
+
+    /* Mobile */
+    @media (max-width: 600px) {
+      nav { flex-direction: column; gap: 1rem; }
+      .nav-links { flex-wrap: wrap; justify-content: center; }
+      .card { padding: 1.5rem; }
+      h1 { font-size: 1.5rem; }
+      .plan-row { flex-direction: column; align-items: flex-start; gap: 1rem; }
+    }
   </style>
 </head>
 <body>
   <nav>
-    <span class="brand">GRANT Security</span>
-    <a href="/">Home</a>
-    {% if current_user.is_authenticated %}
-      <a href="/dashboard">Dashboard</a>
-      <a href="/create_plan">Create Plan</a>
-      <a href="/logout">Logout</a>
-    {% else %}
-      <a href="/signup">Sign Up</a>
-      <a href="/login">Login</a>
-    {% endif %}
+    <a href="/" class="brand">
+      <span style="font-size: 1.5rem;">[</span> GRANT_SYS <span style="font-size: 1.5rem;">]</span>
+    </a>
+    <div class="nav-links">
+      <a href="/">~ /home</a>
+      {% if current_user.is_authenticated %}
+        <a href="/dashboard">~ /dashboard</a>
+        <a href="/create_plan">~ /new_plan</a>
+        <a href="/logout" style="color: var(--danger);">~ /logout</a>
+      {% else %}
+        <a href="/signup">~ /signup</a>
+        <a href="/login">~ /login</a>
+      {% endif %}
+    </div>
   </nav>
-  {% with messages = get_flashed_messages(with_categories=true) %}
-    {% for category, message in messages %}
-      <div class="flash {{ category }}">{{ message }}</div>
-    {% endfor %}
-  {% endwith %}
+
+  <div class="container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for category, message in messages %}
+        <div class="flash {{ category }}">
+          > {{ message }}
+        </div>
+      {% endfor %}
+    {% endwith %}
 """
 
 # ============================================================
@@ -163,17 +397,23 @@ BASE_TEMPLATE = """
 @app.route('/')
 def index():
     return render_template_string(BASE_TEMPLATE + """
-    <div class="card">
-      <h1>GRANT Security</h1>
-      <p>Protect your digital life after you're gone. Set up a plan while you're alive, and we'll handle the rest — with your trusted contact's confirmation.</p>
-      <p class="muted">This is a working demonstration application. Plans are stored encrypted.</p>
-      {% if not current_user.is_authenticated %}
-        <a href="/signup" class="btn btn-green">Create an Account</a>
-        <a href="/login" class="btn">Log In</a>
-      {% else %}
-        <a href="/create_plan" class="btn btn-green">Create a Plan</a>
-        <a href="/dashboard" class="btn">Go to Dashboard</a>
-      {% endif %}
+    <div class="card" style="text-align: center; padding: 4rem 2rem;">
+      <h1 style="font-size: 2.5rem; margin-bottom: 1.5rem;">GRANT Security</h1>
+      <p style="font-size: 1.1rem; max-width: 600px; margin: 0 auto 2.5rem; font-family: var(--font-mono);">
+        > INITIALIZING PROTOCOL...<br>
+        > DIGITAL LEGACY ENCRYPTION ACTIVE.<br><br>
+        Ensure your digital footprint is secured and handled exactly according to your directives. Set up an encrypted plan while alive. The system will execute the rest upon verified human confirmation.
+      </p>
+      <div style="margin-top: 2rem; display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
+        {% if not current_user.is_authenticated %}
+          <a href="/signup" class="btn btn-green" style="padding: 1rem 2rem;">[ CREATE_ACCOUNT ]</a>
+          <a href="/login" class="btn" style="padding: 1rem 2rem;">[ SYSTEM_LOGIN ]</a>
+        {% else %}
+          <a href="/create_plan" class="btn btn-green" style="padding: 1rem 2rem;">[ NEW_PLAN ]</a>
+          <a href="/dashboard" class="btn" style="padding: 1rem 2rem;">[ DASHBOARD ]</a>
+        {% endif %}
+      </div>
+      <p class="muted" style="margin-top: 3rem; font-family: var(--font-mono);">[ ENCRYPTION: AES-256 ACTIVE ]</p>
     </div>
     """)
 
@@ -185,28 +425,35 @@ def signup():
         password = request.form['password']
 
         if User.query.filter_by(email=email).first():
-            flash('Email already registered. Please log in.', 'error')
+            flash('ERROR: Email already registered in the system.', 'error')
             return redirect(url_for('signup'))
 
         user = User(email=email, name=name, password_hash=generate_password_hash(password))
         db.session.add(user)
         db.session.commit()
-        flash('Account created successfully. Please log in.', 'success')
+        flash('SUCCESS: Account created. Proceed to login.', 'success')
         return redirect(url_for('login'))
 
     return render_template_string(BASE_TEMPLATE + """
-    <div class="card">
-      <h1>Create Account</h1>
-      <form method="POST">
-        <label>Full Name</label>
-        <input name="name" required placeholder="e.g., Priya Sharma">
-        <label>Email</label>
-        <input name="email" type="email" required placeholder="you@example.com">
-        <label>Password (min 6 characters)</label>
-        <input name="password" type="password" required minlength="6">
-        <button type="submit">Sign Up</button>
+    <div class="card" style="max-width: 500px; margin: 0 auto;">
+      <h1>Register Operator</h1>
+      <p style="font-family: var(--font-mono);">> ENTER NEW IDENTITY DETAILS</p>
+      <form method="POST" style="margin-top: 2rem;">
+        <div class="form-group">
+          <label>> Full Name</label>
+          <input name="name" required placeholder="e.g., John Doe">
+        </div>
+        <div class="form-group">
+          <label>> Email Address</label>
+          <input name="email" type="email" required placeholder="operator@domain.com">
+        </div>
+        <div class="form-group">
+          <label>> Access Key (Password)</label>
+          <input name="password" type="password" required minlength="6" placeholder="********">
+        </div>
+        <button type="submit" class="btn-green" style="width: 100%;">[ INITIALIZE ]</button>
       </form>
-      <p class="muted" style="margin-top:15px;">Already have an account? <a href="/login">Log in</a></p>
+      <p class="muted" style="text-align: center; margin-top: 1.5rem; font-family: var(--font-mono);">> Existing user? <a href="/login" style="color: var(--primary-green); text-decoration: none;">[ LOGIN ]</a></p>
     </div>
     """)
 
@@ -219,21 +466,26 @@ def login():
 
         if user and check_password_hash(user.password_hash, password):
             login_user(user)
-            flash(f'Welcome back, {user.name}.', 'success')
+            flash(f'ACCESS GRANTED. Welcome back, {user.name}.', 'success')
             return redirect(url_for('dashboard'))
-        flash('Invalid email or password.', 'error')
+        flash('ACCESS DENIED: Invalid credentials.', 'error')
 
     return render_template_string(BASE_TEMPLATE + """
-    <div class="card">
-      <h1>Log In</h1>
-      <form method="POST">
-        <label>Email</label>
-        <input name="email" type="email" required>
-        <label>Password</label>
-        <input name="password" type="password" required>
-        <button type="submit">Log In</button>
+    <div class="card" style="max-width: 500px; margin: 0 auto;">
+      <h1>System Login</h1>
+      <p style="font-family: var(--font-mono);">> AUTHENTICATE TO CONTINUE</p>
+      <form method="POST" style="margin-top: 2rem;">
+        <div class="form-group">
+          <label>> Email Address</label>
+          <input name="email" type="email" required placeholder="operator@domain.com">
+        </div>
+        <div class="form-group">
+          <label>> Access Key</label>
+          <input name="password" type="password" required placeholder="********">
+        </div>
+        <button type="submit" class="btn-green" style="width: 100%;">[ AUTHENTICATE ]</button>
       </form>
-      <p class="muted" style="margin-top:15px;">New here? <a href="/signup">Create an account</a></p>
+      <p class="muted" style="text-align: center; margin-top: 1.5rem; font-family: var(--font-mono);">> Unregistered? <a href="/signup" style="color: var(--primary-green); text-decoration: none;">[ REGISTER ]</a></p>
     </div>
     """)
 
@@ -241,7 +493,7 @@ def login():
 @login_required
 def logout():
     logout_user()
-    flash('You have been logged out.', 'info')
+    flash('SESSION TERMINATED.', 'info')
     return redirect(url_for('index'))
 
 @app.route('/dashboard')
@@ -250,24 +502,35 @@ def dashboard():
     plans = LegacyPlan.query.filter_by(user_id=current_user.id).all()
     return render_template_string(BASE_TEMPLATE + """
     <div class="card">
-      <h1>Your Dashboard</h1>
-      <p>Hello, {{ current_user.name }}. Here are your legacy plans.</p>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
+        <div>
+          <h1>Ops Dashboard</h1>
+          <p style="font-family: var(--font-mono);">> OPERATOR: {{ current_user.name }}</p>
+        </div>
+        <a href="/create_plan" class="btn btn-green">[ + NEW_PLAN ]</a>
+      </div>
+      
       {% if plans %}
+        <h2 style="margin-top: 0;">ACTIVE PROTOCOLS</h2>
         {% for plan in plans %}
           <div class="plan-row">
             <div>
-              <strong>Plan #{{ plan.id }}</strong><br>
-              <span class="muted">Contact: {{ plan.contact_email }} | Threshold: {{ plan.inactivity_days }} days | Last activity: {{ plan.last_activity.strftime('%Y-%m-%d') }}</span>
+              <strong style="font-size: 1.1rem; color: #fff;">[ PLAN_ID: {{ plan.id }} ]</strong>
+              <span class="muted">TARGET_CONTACT: {{ plan.contact_email }}</span>
+              <span class="muted">INACTIVITY_THRESHOLD: {{ plan.inactivity_days }} days | LAST_CHECKIN: {{ plan.last_activity.strftime('%Y-%m-%d') }}</span>
             </div>
-            <span class="badge badge-{{ plan.status }}">{{ plan.status }}</span>
+            <span class="badge badge-{{ plan.status }}">{{ plan.status.replace('_', ' ') }}</span>
           </div>
         {% endfor %}
+        
+        <div style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--border);">
+          <a href="/run_check" class="btn" style="width: 100%; text-align: center;">[ RUN INACTIVITY DIAGNOSTIC ]</a>
+        </div>
       {% else %}
-        <p class="muted">You haven't created any plans yet.</p>
-      {% endif %}
-      <a href="/create_plan" class="btn btn-green">Create a New Plan</a>
-      {% if plans %}
-        <a href="/run_check" class="btn">Run Inactivity Check (Demo)</a>
+        <div style="text-align: center; padding: 3rem 0; border: 1px dashed var(--border); border-radius: 4px;">
+          <p style="font-family: var(--font-mono);">> NO ACTIVE PROTOCOLS DETECTED.</p>
+          <a href="/create_plan" class="btn btn-green" style="margin-top: 1rem;">[ INITIALIZE PLAN ]</a>
+        </div>
       {% endif %}
     </div>
     """, plans=plans)
@@ -307,43 +570,58 @@ def create_plan():
         )
         db.session.add(plan)
         db.session.commit()
-        flash('Plan created and encrypted successfully.', 'success')
+        flash('PROTOCOL SAVED. DATA ENCRYPTED.', 'success')
         return redirect(url_for('dashboard'))
 
     return render_template_string(BASE_TEMPLATE + """
     <div class="card">
-      <h1>Create a Legacy Plan</h1>
-      <p class="muted">All data is encrypted before storage.</p>
-      <form method="POST">
-        <label>Emergency Contact Email</label>
-        <input name="contact_email" type="email" required placeholder="trusted@example.com">
-
-        <label>Inactivity Threshold (days)</label>
-        <input name="inactivity_days" type="number" value="180" required min="30" max="3650">
-
-        <h2 style="margin-top:25px;">Accounts to Handle</h2>
-        <div id="accounts">
-          <div class="account-block">
-            <label>Platform</label>
-            <select name="platform[]">
-              <option>Facebook</option>
-              <option>Google Photos</option>
-              <option>Email</option>
-              <option>Instagram</option>
-            </select>
-            <label>Action</label>
-            <select name="action[]">
-              <option>Delete</option>
-              <option>Transfer to contact</option>
-              <option>Archive privately</option>
-            </select>
-            <label>Filter (optional)</label>
-            <input name="filter[]" placeholder="e.g., album: Family">
+      <h1>Initialize Protocol</h1>
+      <p style="font-family: var(--font-mono);">> CONFIGURE LEGACY DIRECTIVES. DATA WILL BE ENCRYPTED.</p>
+      <form method="POST" style="margin-top: 2rem;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+          <div class="form-group" style="margin-bottom: 0;">
+            <label>> Emergency Contact (Email)</label>
+            <input name="contact_email" type="email" required placeholder="trusted@domain.com">
+          </div>
+          <div class="form-group" style="margin-bottom: 0;">
+            <label>> Inactivity Threshold (Days)</label>
+            <input name="inactivity_days" type="number" value="180" required min="30" max="3650">
           </div>
         </div>
-        <button type="button" onclick="addRow()">+ Add Another Account</button>
+
+        <h2>Target Assets</h2>
+        
+        <div id="accounts">
+          <div class="account-block" style="background: rgba(0,0,0,0.3); padding: 1.5rem; border: 1px solid var(--border); border-radius: 4px; margin-bottom: 1rem;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem;">
+              <div class="form-group" style="margin-bottom: 0;">
+                <label>> Platform</label>
+                <select name="platform[]">
+                  <option>Facebook</option>
+                  <option>Google Photos</option>
+                  <option>Email</option>
+                  <option>Instagram</option>
+                </select>
+              </div>
+              <div class="form-group" style="margin-bottom: 0;">
+                <label>> Directive</label>
+                <select name="action[]">
+                  <option>Delete</option>
+                  <option>Transfer to contact</option>
+                  <option>Archive privately</option>
+                </select>
+              </div>
+              <div class="form-group" style="margin-bottom: 0;">
+                <label>> Filter (Optional)</label>
+                <input name="filter[]" placeholder="e.g., album: Family">
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <button type="button" onclick="addRow()" class="btn-outline" style="margin-bottom: 2rem;">[ + ADD TARGET ]</button>
         <br>
-        <button type="submit" class="btn-green">Save Encrypted Plan</button>
+        <button type="submit" class="btn-green" style="width: 100%; font-size: 1.1rem; padding: 1rem;">[ EXECUTE SAVE_PROTOCOL ]</button>
       </form>
     </div>
     <script>
@@ -351,22 +629,31 @@ def create_plan():
       const div = document.getElementById('accounts');
       const row = document.createElement('div');
       row.className = 'account-block';
+      row.style = "background: rgba(0,0,0,0.3); padding: 1.5rem; border: 1px solid var(--border); border-radius: 4px; margin-bottom: 1rem;";
       row.innerHTML = `
-        <label>Platform</label>
-        <select name="platform[]">
-          <option>Facebook</option>
-          <option>Google Photos</option>
-          <option>Email</option>
-          <option>Instagram</option>
-        </select>
-        <label>Action</label>
-        <select name="action[]">
-          <option>Delete</option>
-          <option>Transfer to contact</option>
-          <option>Archive privately</option>
-        </select>
-        <label>Filter (optional)</label>
-        <input name="filter[]" placeholder="e.g., album: Family">
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem;">
+          <div class="form-group" style="margin-bottom: 0;">
+            <label>> Platform</label>
+            <select name="platform[]">
+              <option>Facebook</option>
+              <option>Google Photos</option>
+              <option>Email</option>
+              <option>Instagram</option>
+            </select>
+          </div>
+          <div class="form-group" style="margin-bottom: 0;">
+            <label>> Directive</label>
+            <select name="action[]">
+              <option>Delete</option>
+              <option>Transfer to contact</option>
+              <option>Archive privately</option>
+            </select>
+          </div>
+          <div class="form-group" style="margin-bottom: 0;">
+            <label>> Filter (Optional)</label>
+            <input name="filter[]" placeholder="e.g., album: Family">
+          </div>
+        </div>
       `;
       div.appendChild(row);
     }
@@ -388,40 +675,49 @@ def run_check():
             db.session.commit()
             results.append({
                 "plan_id": plan.id,
-                "action": "Verification email sent",
+                "action": "VERIFICATION_TRIGGERED",
                 "contact": plan.contact_email,
                 "token": token
             })
         else:
             results.append({
                 "plan_id": plan.id,
-                "action": "Still active",
+                "action": "TARGET_ACTIVE",
                 "days_left": plan.inactivity_days - days_inactive
             })
 
     return render_template_string(BASE_TEMPLATE + """
     <div class="card">
-      <h1>Inactivity Check Results</h1>
+      <h1>Diagnostic Output</h1>
+      <p style="font-family: var(--font-mono);">> RUNNING INACTIVITY CHECK...</p>
+      
       {% if results %}
+        <div style="margin-top: 2rem;">
         {% for r in results %}
-          <div class="plan-row">
-            <div>
-              <strong>Plan #{{ r.plan_id }}</strong><br>
-              <span class="muted">{{ r.action }}</span>
-              {% if r.get('contact') %}
-                <br><span class="muted">Sent to: {{ r.contact }}</span>
-                <br><span class="muted">Confirmation link: <a href="/confirm/{{ r.token }}">/confirm/{{ r.token[:16] }}...</a></span>
-              {% endif %}
-              {% if r.get('days_left') %}
-                <br><span class="muted">Days until threshold: {{ r.days_left }}</span>
-              {% endif %}
-            </div>
+          <div class="plan-row" style="flex-direction: column; align-items: flex-start;">
+            <strong style="font-size: 1.1rem; color: #fff;">[ PLAN_ID: {{ r.plan_id }} ]</strong>
+            <span class="muted" style="margin-top: 0.5rem; font-weight: 600; font-family: var(--font-mono); color: {% if r.get('contact') %}var(--primary-green){% else %}var(--text-muted){% endif %};">
+              > STATUS: {{ r.action }}
+            </span>
+            {% if r.get('contact') %}
+              <div style="background: rgba(0, 255, 65, 0.05); border: 1px solid var(--primary-green); padding: 1.5rem; border-radius: 4px; width: 100%; margin-top: 1rem;">
+                <p class="muted" style="color: var(--primary-green); margin-bottom: 1rem; font-family: var(--font-mono);">
+                  > PAYLOAD SENT TO: {{ r.contact }}<br>
+                  > AWAITING HUMAN CONFIRMATION.
+                </p>
+                <a href="/confirm/{{ r.token }}" class="btn btn-green" style="margin-top: 0.5rem; width: 100%; text-align: center; font-size: 0.9rem;">[ SIMULATE_CONFIRMATION ]</a>
+              </div>
+            {% endif %}
+            {% if r.get('days_left') %}
+              <p class="muted" style="margin-top: 0.5rem; font-family: var(--font-mono);">> {{ r.days_left }} days remaining until threshold.</p>
+            {% endif %}
           </div>
         {% endfor %}
+        </div>
       {% else %}
-        <p class="muted">No active plans to check.</p>
+        <p class="muted" style="font-family: var(--font-mono);">> NO ACTIVE PLANS TO CHECK.</p>
       {% endif %}
-      <a href="/dashboard" class="btn">Back to Dashboard</a>
+      <a href="/dashboard" class="btn" style="margin-top: 2rem;">[ RETURN TO DASHBOARD ]</a>
     </div>
     """, results=results)
 
@@ -429,14 +725,15 @@ def run_check():
 def confirm(token):
     plan = LegacyPlan.query.filter_by(confirmation_token=token).first()
     if not plan:
-        flash('Invalid or expired confirmation link.', 'error')
+        flash('ERROR: Invalid or expired token.', 'error')
         return redirect(url_for('index'))
 
     if plan.status in ("confirmed", "executed"):
         return render_template_string(BASE_TEMPLATE + """
-        <div class="card">
-          <h1>Already Confirmed</h1>
-          <p>This plan has already been confirmed and executed.</p>
+        <div class="card" style="text-align: center;">
+          <h1 style="color: var(--warning);">Protocol Executed</h1>
+          <p style="font-family: var(--font-mono);">> This plan has already been confirmed and executed.</p>
+          <a href="/" class="btn" style="margin-top: 1rem;">[ RETURN ]</a>
         </div>
         """)
 
@@ -473,31 +770,14 @@ def confirm(token):
 
     report_text = f"""
 GRANT SECURITY EXECUTION REPORT
+========================================
 User: {plan_data.get('userName')}
 Contact: {plan.contact_email}
 Generated: {datetime.utcnow().strftime('%Y-%m-%d %H:%M')}
 Status: EXECUTION COMPLETE
+========================================
 
 ACTIONS:
 """
     for i, a in enumerate(actions, 1):
-        report_text += f"\n{i}. {a['platform']} ({a['filter'] or 'no filter'})\n   Action: {a['action']}\n   Detail: {a['detail']}\n   Status: {a['status']}\n"
-
-    return render_template_string(BASE_TEMPLATE + """
-    <div class="card">
-      <h1>Confirmation Successful</h1>
-      <p>The plan has been executed. Here is the report:</p>
-      <pre>{{ report }}</pre>
-    </div>
-    """, report=report_text)
-
-# ============================================================
-# INITIALIZE AND RUN
-# ============================================================
-
-with app.app_context():
-    db.create_all()
-
-if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port)
+        report_text += f"\n{i}. {a['platform']} ({a['filter'] or 'no filter'})\n   Action: {a['action']}\n   Detail: {a['detail']}\n   Status: {a
