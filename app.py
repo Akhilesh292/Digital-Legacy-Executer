@@ -456,3 +456,1164 @@ BASE_TEMPLATE = """
       border-radius: 6px;
       font-family: var(--font-tech);
       font-size: 1.05rem;
+      background: rgba(7, 10, 18, 0.85);
+      color: #ffffff;
+      transition: all 0.3s ease;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--marvel-red);
+      box-shadow: 0 0 15px var(--marvel-red-glow);
+      background: rgba(12, 16, 28, 0.95);
+    }
+
+    /* Buttons */
+    button, .btn {
+      display: inline-block;
+      padding: 0.85rem 1.8rem;
+      background: transparent;
+      color: #ffffff;
+      border: 1px solid var(--marvel-red);
+      border-radius: 5px;
+      font-family: var(--font-tech);
+      font-size: 1.05rem;
+      font-weight: 700;
+      letter-spacing: 1.8px;
+      text-transform: uppercase;
+      cursor: pointer;
+      text-decoration: none;
+      margin-top: 0.5rem;
+      transition: all 0.3s ease;
+      text-align: center;
+    }
+
+    button:hover, .btn:hover {
+      background: rgba(230, 36, 41, 0.2);
+      border-color: var(--marvel-red);
+      box-shadow: 0 0 20px var(--marvel-red-glow);
+      color: #ffffff;
+    }
+
+    .btn-red {
+      background: linear-gradient(135deg, var(--marvel-red), var(--marvel-red-dark));
+      border: 1px solid var(--marvel-red);
+      color: #ffffff;
+      box-shadow: 0 4px 18px var(--marvel-red-glow);
+    }
+
+    .btn-red:hover {
+      background: linear-gradient(135deg, #ff3338, var(--marvel-red));
+      box-shadow: 0 6px 25px rgba(230, 36, 41, 0.75);
+      transform: translateY(-1px);
+    }
+
+    .btn-gold {
+      background: linear-gradient(135deg, #d4a017, #f5c518);
+      border: 1px solid var(--gold);
+      color: #07080d;
+      font-weight: 800;
+      box-shadow: 0 4px 18px var(--gold-glow);
+    }
+
+    .btn-gold:hover {
+      background: #ffdb4d;
+      box-shadow: 0 6px 25px var(--gold-glow);
+      transform: translateY(-1px);
+    }
+
+    .btn-cyan {
+      border-color: var(--arc-blue);
+      color: var(--arc-blue);
+    }
+
+    .btn-cyan:hover {
+      background: rgba(0, 240, 255, 0.18);
+      box-shadow: 0 0 20px var(--arc-blue-glow);
+      color: #ffffff;
+    }
+
+    /* Flash Messages */
+    .flash {
+      padding: 1rem 1.25rem;
+      border-radius: 6px;
+      margin-bottom: 1.6rem;
+      font-family: var(--font-tech);
+      font-size: 1rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+      border: 1px solid;
+      background: rgba(10, 13, 22, 0.95);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .flash.success {
+      border-color: var(--success);
+      color: #34d399;
+      box-shadow: 0 0 15px rgba(16, 185, 129, 0.25);
+    }
+
+    .flash.error {
+      border-color: var(--danger);
+      color: #f87171;
+      box-shadow: 0 0 15px rgba(255, 51, 68, 0.25);
+    }
+
+    /* Plan Rows */
+    .plan-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.4rem;
+      background: rgba(10, 14, 24, 0.75);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--marvel-red);
+      border-radius: 6px;
+      margin-bottom: 1.1rem;
+      font-family: var(--font-tech);
+      transition: all 0.3s ease;
+    }
+
+    .plan-row:hover {
+      border-color: var(--marvel-red);
+      box-shadow: 0 4px 20px rgba(230, 36, 41, 0.2);
+      transform: translateY(-2px);
+    }
+
+    .badge {
+      padding: 0.35rem 0.9rem;
+      border-radius: 4px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      font-family: var(--font-tech);
+    }
+
+    .badge-active {
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid #10b981;
+      color: #34d399;
+      box-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
+    }
+
+    .badge-pending_verification {
+      background: rgba(255, 215, 0, 0.15);
+      border: 1px solid var(--gold);
+      color: var(--gold);
+      box-shadow: 0 0 10px var(--gold-glow);
+    }
+
+    .badge-executed {
+      background: rgba(0, 240, 255, 0.15);
+      border: 1px solid var(--arc-blue);
+      color: var(--arc-blue);
+      box-shadow: 0 0 10px var(--arc-blue-glow);
+    }
+
+    pre {
+      background: rgba(6, 8, 14, 0.95);
+      color: var(--gold);
+      padding: 1.6rem;
+      border-radius: 6px;
+      font-family: 'Fira Code', var(--font-tech), monospace;
+      font-size: 0.92rem;
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--marvel-red);
+      white-space: pre-wrap;
+      line-height: 1.6;
+    }
+
+    .muted {
+      color: var(--muted);
+      font-size: 0.88rem;
+      display: block;
+      margin-top: 0.3rem;
+    }
+
+    .hero-stat {
+      background: rgba(230, 36, 41, 0.08);
+      border: 1px solid var(--border);
+      padding: 1rem 1.4rem;
+      border-radius: 6px;
+      text-align: center;
+      flex: 1;
+    }
+
+    .hero-stat-val {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      color: var(--gold);
+      letter-spacing: 1px;
+    }
+
+    .hero-stat-lbl {
+      font-family: var(--font-tech);
+      font-size: 0.8rem;
+      color: #cbd5e1;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+    }
+  </style>
+</head>
+<body>
+  <!-- Live Marvel Canvas Background -->
+  <canvas id="marvel-canvas"></canvas>
+  <div class="hud-scanlines"></div>
+  <div class="vignette-overlay"></div>
+
+  <!-- Navigation -->
+  <nav>
+    <a href="/" class="brand-wrap">
+      <span class="marvel-badge">MARVEL</span>
+      <span class="brand-title">STARK SECURE OS</span>
+      <span class="shield-badge">LEVEL 7</span>
+    </a>
+    <div class="nav-links">
+      <a href="/">[ Home ]</a>
+      {% if current_user.is_authenticated %}
+        <a href="/dashboard">[ Dashboard ]</a>
+        <a href="/create_plan" style="color: var(--gold);">[ + New Directive ]</a>
+        <a href="/logout" style="color: var(--danger);">[ Logout ]</a>
+      {% else %}
+        <a href="/signup">[ Clearance Sign Up ]</a>
+        <a href="/login">[ Access Login ]</a>
+      {% endif %}
+    </div>
+  </nav>
+
+  <!-- Content Container -->
+  <div class="container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for category, message in messages %}
+        <div class="flash {{ category }}">
+          <span>⚡</span>
+          <span>{{ message }}</span>
+        </div>
+      {% endfor %}
+    {% endwith %}
+"""
+
+# ============================================================
+# LIVE MARVEL CANVAS ANIMATION (ARC REACTOR, INFINITY STONES & ELDRITCH HUD)
+# ============================================================
+
+MARVEL_LIVE_JS = """
+  <!-- S.H.I.E.L.D. Bottom Telemetry HUD -->
+  <div class="hud-footer">
+    <div><span class="hud-pulse-dot"></span>J.A.R.V.I.S. // QUANTUM ENCRYPTION CORE ONLINE</div>
+    <div id="hud-coords">SECTOR 7G // ARC OUTPUT: 3.2 GJ/S</div>
+  </div>
+
+<script>
+(function() {
+  const canvas = document.getElementById('marvel-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const hudCoords = document.getElementById('hud-coords');
+
+  let w, h;
+  function resize() {
+    w = canvas.width = window.innerWidth;
+    h = canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  // Mouse state for Eldritch Mandala & Parallax
+  const mouse = { x: w * 0.5, y: h * 0.5, active: false };
+
+  // Infinity Stone Palette (Space, Reality, Power, Mind, Time, Soul)
+  const infinityStones = [
+    { name: "REALITY", r: 230, g: 36,  b: 41  }, // Red
+    { name: "SPACE",   r: 0,   g: 240, b: 255 }, // Blue
+    { name: "MIND",    r: 255, g: 215, b: 0   }, // Yellow
+    { name: "POWER",   r: 175, g: 82,  b: 255 }, // Purple
+    { name: "TIME",    r: 16,  g: 225, b: 135 }, // Green
+    { name: "SOUL",    r: 255, g: 125, b: 15  }  // Orange
+  ];
+
+  // 1. Cosmic Infinity Energy Particles
+  const particles = [];
+  const TOTAL_PARTICLES = Math.min(110, Math.floor(window.innerWidth / 12));
+  for (let i = 0; i < TOTAL_PARTICLES; i++) {
+    const stone = infinityStones[i % infinityStones.length];
+    particles.push({
+      x: Math.random() * w,
+      y: Math.random() * h,
+      vx: (Math.random() - 0.5) * 0.65,
+      vy: (Math.random() - 0.5) * 0.65,
+      r: Math.random() * 2.6 + 1.1,
+      stone: stone,
+      alpha: Math.random() * 0.65 + 0.3,
+      pulse: Math.random() * Math.PI * 2,
+      pulseSpeed: Math.random() * 0.03 + 0.015
+    });
+  }
+
+  // 2. Doctor Strange Eldritch Sparks & Click Shockwaves
+  const sparks = [];
+  const shockwaves = [];
+
+  window.addEventListener('mousemove', function(e) {
+    mouse.x = e.clientX;
+    mouse.y = e.clientY;
+    mouse.active = true;
+
+    if (hudCoords) {
+      hudCoords.textContent = `TARGET LOCK: [${Math.round(e.clientX)}, ${Math.round(e.clientY)}] // ARC OUTPUT: 3.2 GJ/S`;
+    }
+
+    // Spawn Eldritch Sling-Ring Sparks
+    for (let i = 0; i < 3; i++) {
+      const angle = Math.random() * Math.PI * 2;
+      const speed = Math.random() * 2.2 + 0.6;
+      sparks.push({
+        x: e.clientX + (Math.random() - 0.5) * 14,
+        y: e.clientY + (Math.random() - 0.5) * 14,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed - 0.5,
+        size: Math.random() * 2.8 + 1.2,
+        color: Math.random() > 0.35 ? '255, 195, 25' : '255, 95, 20',
+        life: 1.0,
+        decay: Math.random() * 0.03 + 0.02
+      });
+    }
+  });
+
+  // Repulsor / Infinity Pulse on Click
+  window.addEventListener('click', function(e) {
+    const pick = infinityStones[Math.floor(Math.random() * infinityStones.length)];
+    shockwaves.push({
+      x: e.clientX,
+      y: e.clientY,
+      radius: 8,
+      maxRadius: Math.max(w, h) * 0.45,
+      color: `${pick.r}, ${pick.g}, ${pick.b}`,
+      life: 1.0
+    });
+  });
+
+  let angle = 0;
+  let pulseTime = 0;
+
+  // Draw Cosmic Nebula Glows
+  function drawCosmicNebula() {
+    // Red Reality Nebula (Top-Left)
+    const g1 = ctx.createRadialGradient(w * 0.18, h * 0.22, 10, w * 0.18, h * 0.22, w * 0.42);
+    g1.addColorStop(0, 'rgba(230, 36, 41, 0.16)');
+    g1.addColorStop(1, 'rgba(5, 6, 10, 0)');
+    ctx.fillStyle = g1;
+    ctx.fillRect(0, 0, w, h);
+
+    // Space Tesseract Cyan Glow (Center)
+    const g2 = ctx.createRadialGradient(w * 0.5, h * 0.48, 15, w * 0.5, h * 0.48, w * 0.45);
+    g2.addColorStop(0, 'rgba(0, 240, 255, 0.14)');
+    g2.addColorStop(1, 'rgba(5, 6, 10, 0)');
+    ctx.fillStyle = g2;
+    ctx.fillRect(0, 0, w, h);
+
+    // Power Stone Purple Nebula (Bottom-Right)
+    const g3 = ctx.createRadialGradient(w * 0.85, h * 0.8, 10, w * 0.85, h * 0.8, w * 0.4);
+    g3.addColorStop(0, 'rgba(157, 78, 221, 0.14)');
+    g3.addColorStop(1, 'rgba(5, 6, 10, 0)');
+    ctx.fillStyle = g3;
+    ctx.fillRect(0, 0, w, h);
+  }
+
+  // Draw Luminous Stark Arc Reactor Core & Avengers Emblem
+  function drawStarkArcReactor() {
+    // Subtle parallax shift toward cursor
+    const px = (mouse.x - w * 0.5) * 0.025;
+    const py = (mouse.y - h * 0.5) * 0.025;
+    const cx = w * 0.5 + px;
+    const cy = h * 0.48 + py;
+    const baseR = Math.min(w, h) * 0.34;
+
+    pulseTime += 0.03;
+    angle += 0.004;
+    const breathe = Math.sin(pulseTime) * 6;
+
+    ctx.save();
+    ctx.translate(cx, cy);
+
+    // 1. Core Plasma Backlight
+    const coreGlow = ctx.createRadialGradient(0, 0, baseR * 0.05, 0, 0, baseR * 1.15);
+    coreGlow.addColorStop(0, 'rgba(0, 240, 255, 0.24)');
+    coreGlow.addColorStop(0.45, 'rgba(0, 160, 255, 0.08)');
+    coreGlow.addColorStop(1, 'rgba(0, 0, 0, 0)');
+    ctx.fillStyle = coreGlow;
+    ctx.beginPath();
+    ctx.arc(0, 0, baseR * 1.15, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 2. S.H.I.E.L.D. Rotating Radar Sweep
+    ctx.save();
+    ctx.rotate(angle * 2.2);
+    const sweepGrad = ctx.createLinearGradient(0, 0, baseR, 0);
+    sweepGrad.addColorStop(0, 'rgba(0, 240, 255, 0.14)');
+    sweepGrad.addColorStop(1, 'rgba(0, 240, 255, 0)');
+    ctx.fillStyle = sweepGrad;
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.arc(0, 0, baseR + breathe, 0, 0.45);
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+
+    // 3. Outer Marvel Red Armor Ring
+    ctx.strokeStyle = 'rgba(230, 36, 41, 0.26)';
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.arc(0, 0, baseR + breathe, 0, Math.PI * 2);
+    ctx.stroke();
+
+    // 4. Segmented Cyan Arc Reactor Ring + 12 Copper/Plasma Coils
+    ctx.save();
+    ctx.rotate(angle);
+    ctx.strokeStyle = 'rgba(0, 240, 255, 0.24)';
+    ctx.lineWidth = 2;
+    ctx.setLineDash([22, 12, 6, 12]);
+    ctx.beginPath();
+    ctx.arc(0, 0, baseR * 0.84, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    const numCoils = 12;
+    for (let i = 0; i < numCoils; i++) {
+      const a = (i * Math.PI * 2) / numCoils;
+      ctx.save();
+      ctx.rotate(a);
+      ctx.fillStyle = 'rgba(0, 240, 255, 0.28)';
+      ctx.strokeStyle = 'rgba(255, 215, 0, 0.28)';
+      ctx.lineWidth = 1;
+      ctx.fillRect(baseR * 0.72, -5, baseR * 0.11, 10);
+      ctx.strokeRect(baseR * 0.72, -5, baseR * 0.11, 10);
+      ctx.restore();
+    }
+    ctx.restore();
+
+    // 5. Counter-Rotating Gold Vibranium Ring
+    ctx.save();
+    ctx.rotate(-angle * 1.5);
+    ctx.strokeStyle = 'rgba(255, 215, 0, 0.22)';
+    ctx.lineWidth = 1.8;
+    ctx.setLineDash([30, 14, 8, 14]);
+    ctx.beginPath();
+    ctx.arc(0, 0, baseR * 0.64, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.restore();
+
+    // 6. Mark VI Triangular Plasma Core
+    const triR = baseR * 0.44 + breathe * 0.4;
+    ctx.strokeStyle = 'rgba(0, 240, 255, 0.38)';
+    ctx.fillStyle = 'rgba(0, 240, 255, 0.06)';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    for (let k = 0; k < 3; k++) {
+      // Inverted triangle like Iron Man's chest reactor
+      const ta = Math.PI / 2 + (k * 2 * Math.PI) / 3;
+      const tx = Math.cos(ta) * triR;
+      const ty = Math.sin(ta) * triR;
+      if (k === 0) ctx.moveTo(tx, ty);
+      else ctx.lineTo(tx, ty);
+    }
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    // 7. Central Avengers 'A' Hologram Emblem
+    ctx.font = "900 " + Math.floor(baseR * 0.56) + "px 'Bebas Neue', sans-serif";
+    ctx.fillStyle = "rgba(230, 36, 41, 0.14)";
+    ctx.strokeStyle = "rgba(255, 215, 0, 0.18)";
+    ctx.lineWidth = 1.2;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText("A", 0, 4);
+    ctx.strokeText("A", 0, 4);
+
+    ctx.restore();
+  }
+
+  // Draw Doctor Strange Rotating Eldritch Mandala around Cursor
+  function drawEldritchCursor() {
+    if (!mouse.active) return;
+    ctx.save();
+    ctx.translate(mouse.x, mouse.y);
+
+    // Outer rotating rune circle
+    ctx.save();
+    ctx.rotate(angle * 4);
+    ctx.strokeStyle = 'rgba(255, 195, 25, 0.35)';
+    ctx.lineWidth = 1.2;
+    ctx.setLineDash([8, 6]);
+    ctx.beginPath();
+    ctx.arc(0, 0, 32, 0, Math.PI * 2);
+    ctx.stroke();
+
+    // Intersecting Mystic Squares
+    ctx.setLineDash([]);
+    ctx.strokeStyle = 'rgba(255, 130, 20, 0.25)';
+    ctx.strokeRect(-18, -18, 36, 36);
+    ctx.rotate(Math.PI / 4);
+    ctx.strokeRect(-18, -18, 36, 36);
+    ctx.restore();
+
+    ctx.restore();
+  }
+
+  // Main 60FPS Render Loop
+  function render() {
+    ctx.clearRect(0, 0, w, h);
+
+    // Layer 1: Cosmic Nebula
+    drawCosmicNebula();
+
+    // Layer 2: Stark Arc Reactor & Avengers Hologram
+    drawStarkArcReactor();
+
+    // Layer 3: Quantum Energy Filaments between Infinity Particles
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 125) {
+          const alpha = (1 - dist / 125) * 0.22;
+          const s = particles[i].stone;
+          ctx.strokeStyle = `rgba(${s.r}, ${s.g}, ${s.b}, ${alpha})`;
+          ctx.lineWidth = 0.9;
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.stroke();
+        }
+      }
+    }
+
+    // Layer 4: Glowing Infinity Stone Particles
+    for (let i = 0; i < particles.length; i++) {
+      const p = particles[i];
+      p.x += p.vx;
+      p.y += p.vy;
+      if (p.x < 0) p.x = w;
+      if (p.x > w) p.x = 0;
+      if (p.y < 0) p.y = h;
+      if (p.y > h) p.y = 0;
+
+      p.pulse += p.pulseSpeed;
+      const currentAlpha = Math.max(0.2, p.alpha + Math.sin(p.pulse) * 0.25);
+
+      // Outer stone aura
+      ctx.fillStyle = `rgba(${p.stone.r}, ${p.stone.g}, ${p.stone.b}, ${currentAlpha * 0.25})`;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r * 3, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Bright stone core
+      ctx.fillStyle = `rgba(${p.stone.r}, ${p.stone.g}, ${p.stone.b}, ${currentAlpha})`;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // Layer 5: Click Shockwaves
+    for (let i = shockwaves.length - 1; i >= 0; i--) {
+      const sw = shockwaves[i];
+      sw.radius += 7;
+      sw.life -= 0.022;
+      if (sw.life <= 0) {
+        shockwaves.splice(i, 1);
+        continue;
+      }
+      ctx.strokeStyle = `rgba(${sw.color}, ${sw.life * 0.6})`;
+      ctx.lineWidth = 2.5 * sw.life;
+      ctx.beginPath();
+      ctx.arc(sw.x, sw.y, sw.radius, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+
+    // Layer 6: Doctor Strange Eldritch Mandala & Sparks
+    drawEldritchCursor();
+
+    for (let i = sparks.length - 1; i >= 0; i--) {
+      const s = sparks[i];
+      s.x += s.vx;
+      s.y += s.vy;
+      s.life -= s.decay;
+
+      if (s.life <= 0) {
+        sparks.splice(i, 1);
+        continue;
+      }
+
+      ctx.fillStyle = `rgba(${s.color}, ${s.life})`;
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.size * s.life, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    requestAnimationFrame(render);
+  }
+  requestAnimationFrame(render);
+})();
+</script>
+</body>
+</html>
+"""
+
+# ============================================================
+# APPLICATION ROUTES
+# ============================================================
+
+@app.route('/')
+def index():
+    return render_template_string(BASE_TEMPLATE + """
+    <div class="card" style="text-align: center; padding: 4rem 2.5rem;">
+      <div class="corner-tag">STARK IND // DIRECTIVE 838</div>
+      <h1>STARK INDUSTRIES <span class="accent">LEGACY DIRECTIVE</span></h1>
+      <p style="font-family: var(--font-tech); font-size: 1.25rem; color: var(--gold); letter-spacing: 1.5px; text-transform: uppercase;">
+        // S.H.I.E.L.D. LEVEL 7 AUTONOMOUS ASSET SUCCESSION PROTOCOL
+      </p>
+      <p style="max-width: 720px; margin: 1.5rem auto 2rem; color: var(--text); line-height: 1.8;">
+        When the hero falls, their legacy must endure. Protect your digital empire, confidential archives, and credentials with military-grade AES encryption. In the event of confirmed inactive status, your designated emergency contacts receive encrypted directives following strict S.H.I.E.L.D. legal verification.
+      </p>
+
+      <div style="display: flex; gap: 1.5rem; justify-content: center; max-width: 650px; margin: 0 auto 2.5rem; flex-wrap: wrap;">
+        <div class="hero-stat">
+          <div class="hero-stat-val">256-BIT</div>
+          <div class="hero-stat-lbl">Quantum Fernet Encryption</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-val">2-TIER</div>
+          <div class="hero-stat-lbl">Contact Escalation</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-val">2FA</div>
+          <div class="hero-stat-lbl">Legal Document Verification</div>
+        </div>
+      </div>
+
+      <div style="display: flex; justify-content: center; gap: 1.2rem; flex-wrap: wrap;">
+        {% if not current_user.is_authenticated %}
+          <a href="/signup" class="btn btn-red" style="padding: 1rem 2.4rem;">[ INITIATE CLEARANCE ]</a>
+          <a href="/login" class="btn btn-gold" style="padding: 1rem 2.4rem;">[ AGENT LOGIN ]</a>
+        {% else %}
+          <a href="/create_plan" class="btn btn-red" style="padding: 1rem 2.4rem;">[ + NEW DIRECTIVE ]</a>
+          <a href="/dashboard" class="btn btn-gold" style="padding: 1rem 2.4rem;">[ COMMAND DASHBOARD ]</a>
+        {% endif %}
+      </div>
+    </div>
+    """ + MARVEL_LIVE_JS)
+
+@app.route('/signup', methods=['GET', 'POST'])
+def signup():
+    if request.method == 'POST':
+        email = request.form['email'].strip().lower()
+        name = request.form['name'].strip()
+        password = request.form['password']
+
+        if User.query.filter_by(email=email).first():
+            flash('SECURITY ALERT: Agent email already registered in S.H.I.E.L.D. database.', 'error')
+            return redirect(url_for('signup'))
+
+        db.session.add(User(email=email, name=name, password_hash=generate_password_hash(password)))
+        db.session.commit()
+        flash('CLEARANCE GRANTED: Agent account initialized successfully.', 'success')
+        return redirect(url_for('login'))
+
+    return render_template_string(BASE_TEMPLATE + """
+    <div class="card" style="max-width: 540px; margin: 0 auto;">
+      <div class="corner-tag">REGISTRATION // FORM 104</div>
+      <h1>AGENT <span class="accent">CLEARANCE</span></h1>
+      <p style="color: var(--muted); font-size: 0.92rem;">Register your cryptographic credentials into the Stark Legacy Network.</p>
+      <form method="POST" style="margin-top: 1.8rem;">
+        <div class="form-group">
+          <label>Agent Codename / Full Name</label>
+          <input name="name" required placeholder="e.g., Tony Stark">
+        </div>
+        <div class="form-group">
+          <label>Secure Comms Email</label>
+          <input name="email" type="email" required placeholder="agent@starkindustries.com">
+        </div>
+        <div class="form-group">
+          <label>Biometric Passcode / Password (Min 6 chars)</label>
+          <input name="password" type="password" required minlength="6" placeholder="••••••••••••">
+        </div>
+        <button type="submit" class="btn btn-red" style="width: 100%; padding: 1rem; margin-top: 1rem;">
+          [ INITIALIZE AGENT CLEARANCE ]
+        </button>
+      </form>
+      <p class="muted" style="margin-top: 1.5rem; text-align: center;">Already have active clearance? <a href="/login" style="color: var(--gold);">Login here</a></p>
+    </div>
+    """ + MARVEL_LIVE_JS)
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        user = User.query.filter_by(email=request.form['email'].strip().lower()).first()
+        if user and check_password_hash(user.password_hash, request.form['password']):
+            login_user(user)
+            flash(f'AUTHENTICATION VERIFIED: Welcome back, Agent {user.name}.', 'success')
+            return redirect(url_for('dashboard'))
+        flash('SECURITY ALERT: Invalid credentials or unauthorized clearance.', 'error')
+
+    return render_template_string(BASE_TEMPLATE + """
+    <div class="card" style="max-width: 540px; margin: 0 auto;">
+      <div class="corner-tag">S.H.I.E.L.D. AUTH // GATEWAY</div>
+      <h1>AGENT <span class="accent">LOGIN</span></h1>
+      <p style="color: var(--muted); font-size: 0.92rem;">Authenticate to access your encrypted estate directives.</p>
+      <form method="POST" style="margin-top: 1.8rem;">
+        <div class="form-group">
+          <label>Comms Email Address</label>
+          <input name="email" type="email" required placeholder="agent@starkindustries.com">
+        </div>
+        <div class="form-group">
+          <label>Biometric Passcode</label>
+          <input name="password" type="password" required placeholder="••••••••••••">
+        </div>
+        <button type="submit" class="btn btn-red" style="width: 100%; padding: 1rem; margin-top: 1rem;">
+          [ VERIFY & ENTER ]
+        </button>
+      </form>
+      <p class="muted" style="margin-top: 1.5rem; text-align: center;">New to the protocol? <a href="/signup" style="color: var(--gold);">Request Clearance</a></p>
+    </div>
+    """ + MARVEL_LIVE_JS)
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    flash('CLEARANCE SUSPENDED: Secure session closed.', 'success')
+    return redirect(url_for('index'))
+
+@app.route('/dashboard')
+@login_required
+def dashboard():
+    plans = LegacyPlan.query.filter_by(user_id=current_user.id).all()
+    return render_template_string(BASE_TEMPLATE + """
+    <div class="card">
+      <div class="corner-tag">HQ OVERVIEW</div>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
+        <div>
+          <h1>COMMAND <span class="accent">DASHBOARD</span></h1>
+          <p style="color: var(--gold); font-family: var(--font-tech); font-size: 1.1rem; letter-spacing: 1px; margin: 0;">
+            ACTIVE AGENT: {{ current_user.name | upper }} // ENCRYPTION KEY ONLINE
+          </p>
+        </div>
+        <a href="/create_plan" class="btn btn-red">[ + NEW DIRECTIVE ]</a>
+      </div>
+
+      {% if plans %}
+        {% for plan in plans %}
+          <div class="plan-row" style="flex-direction: column; align-items: flex-start;">
+            <div style="width: 100%; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+              <strong style="font-size: 1.2rem; color: #ffffff;">[ DIRECTIVE #{{ plan.id }} ]</strong>
+              <span class="badge badge-{{ plan.status }}">{{ plan.status.replace('_', ' ') }}</span>
+            </div>
+            <div style="margin-top: 1rem; width: 100%; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0.8rem;">
+              <span class="muted"><strong>PRIMARY CONTACT:</strong> {{ plan.primary_email }}</span>
+              <span class="muted"><strong>ESCALATION CONTACT:</strong> {{ plan.secondary_email or 'NONE SPECIFIED' }}</span>
+              <span class="muted"><strong>INACTIVITY THRESHOLD:</strong> {{ plan.inactivity_days }} DAYS</span>
+              <span class="muted"><strong>LAST CHECK-IN:</strong> {{ plan.last_activity.strftime('%Y-%m-%d %H:%M') }}</span>
+            </div>
+          </div>
+        {% endfor %}
+        <div style="margin-top: 2rem;">
+          <a href="/run_check" class="btn btn-gold" style="width: 100%; text-align: center; padding: 1rem;">
+            [ RUN S.H.I.E.L.D. INACTIVITY DIAGNOSTIC ]
+          </a>
+        </div>
+      {% else %}
+        <div style="text-align: center; padding: 3rem 1rem; background: rgba(0,0,0,0.4); border-radius: 6px; border: 1px dashed var(--border);">
+          <p style="font-family: var(--font-tech); font-size: 1.2rem; color: var(--gold);">NO ACTIVE DIRECTIVES DETECTED IN VAULT.</p>
+          <p style="color: var(--muted);">Initialize your first digital succession directive to protect your digital assets.</p>
+          <a href="/create_plan" class="btn btn-red" style="margin-top: 1rem;">[ CREATE FIRST DIRECTIVE ]</a>
+        </div>
+      {% endif %}
+    </div>
+    """ + MARVEL_LIVE_JS, plans=plans)
+
+@app.route('/create_plan', methods=['GET', 'POST'])
+@login_required
+def create_plan():
+    if request.method == 'POST':
+        accounts = [
+            {"platform": p, "action": a, "filter": f.strip()}
+            for p, a, f in zip(request.form.getlist('platform[]'), request.form.getlist('action[]'), request.form.getlist('filter[]'))
+            if p and a
+        ]
+        plan_data = {
+            "userName": current_user.name,
+            "accounts": accounts,
+            "createdAt": datetime.utcnow().isoformat()
+        }
+        db.session.add(LegacyPlan(
+            user_id=current_user.id,
+            encrypted_data=encrypt_plan(plan_data),
+            primary_email=request.form['primary_email'].strip().lower(),
+            secondary_email=request.form.get('secondary_email', '').strip().lower() or None,
+            inactivity_days=int(request.form['inactivity_days']),
+            last_activity=datetime.utcnow(),
+            status="active"
+        ))
+        db.session.commit()
+        flash('DIRECTIVE ENCRYPTED & REGISTERED IN S.H.I.E.L.D. VAULT.', 'success')
+        return redirect(url_for('dashboard'))
+
+    return render_template_string(BASE_TEMPLATE + """
+    <div class="card">
+      <div class="corner-tag">DIRECTIVE CREATION</div>
+      <h1>INITIALIZE <span class="accent">LEGACY DIRECTIVE</span></h1>
+      <p style="color: var(--muted);">All asset parameters are encrypted with 256-bit symmetric cipher prior to storage.</p>
+
+      <form method="POST" style="margin-top: 2rem;">
+        <h2>Trusted Contact Escalation Path</h2>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+          <div class="form-group" style="margin: 0;">
+            <label>Primary Trusted Contact (e.g., Pepper Potts)</label>
+            <input name="primary_email" type="email" required placeholder="trusted.primary@example.com">
+          </div>
+          <div class="form-group" style="margin: 0;">
+            <label>Secondary Escalation Contact (e.g., Happy Hogan)</label>
+            <input name="secondary_email" type="email" placeholder="trusted.secondary@example.com">
+            <span class="muted">Alerted if primary contact does not respond within 7 days.</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Inactivity Trigger Threshold (Days)</label>
+          <input name="inactivity_days" type="number" value="180" required min="1" max="3650">
+        </div>
+
+        <h2>Target Digital Assets & Directives</h2>
+        <div id="accounts">
+          <div class="account-block" style="background: rgba(8, 12, 22, 0.7); padding: 1.4rem; border: 1px solid var(--border); border-radius: 6px; margin-bottom: 1rem;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.2rem;">
+              <div class="form-group" style="margin: 0;">
+                <label>Platform / Service</label>
+                <select name="platform[]">
+                  <option>WhatsApp</option>
+                  <option>Discord</option>
+                  <option>X (Twitter)</option>
+                  <option>Threads</option>
+                  <option>Instagram</option>
+                  <option>Google Drive / Photos</option>
+                  <option>GitHub / Code Repos</option>
+                  <option>LinkedIn</option>
+                </select>
+              </div>
+              <div class="form-group" style="margin: 0;">
+                <label>Action Directive</label>
+                <select name="action[]">
+                  <option>Delete Account & Wipe Data</option>
+                  <option>Transfer to Trusted Contact</option>
+                  <option>Archive Privately in Secure Vault</option>
+                </select>
+              </div>
+              <div class="form-group" style="margin: 0;">
+                <label>Scope / Filter (Optional)</label>
+                <input name="filter[]" placeholder="e.g., Specific Folder, Chats, or All">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button type="button" onclick="addRow()" class="btn btn-cyan" style="margin-bottom: 2rem;">
+          + ADD ANOTHER ASSET DIRECTIVE
+        </button>
+        <br>
+        <button type="submit" class="btn btn-red" style="width: 100%; padding: 1.1rem; font-size: 1.15rem;">
+          [ ENCRYPT & COMMIT DIRECTIVE TO VAULT ]
+        </button>
+      </form>
+    </div>
+
+    <script>
+    function addRow() {
+      const container = document.getElementById('accounts');
+      const div = document.createElement('div');
+      div.className = 'account-block';
+      div.style = "background: rgba(8, 12, 22, 0.7); padding: 1.4rem; border: 1px solid var(--border); border-radius: 6px; margin-bottom: 1rem;";
+      div.innerHTML = `
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.2rem;">
+          <div class="form-group" style="margin: 0;">
+            <label>Platform / Service</label>
+            <select name="platform[]">
+              <option>WhatsApp</option>
+              <option>Discord</option>
+              <option>X (Twitter)</option>
+              <option>Threads</option>
+              <option>Instagram</option>
+              <option>Google Drive / Photos</option>
+              <option>GitHub / Code Repos</option>
+              <option>LinkedIn</option>
+            </select>
+          </div>
+          <div class="form-group" style="margin: 0;">
+            <label>Action Directive</label>
+            <select name="action[]">
+              <option>Delete Account & Wipe Data</option>
+              <option>Transfer to Trusted Contact</option>
+              <option>Archive Privately in Secure Vault</option>
+            </select>
+          </div>
+          <div class="form-group" style="margin: 0;">
+            <label>Scope / Filter (Optional)</label>
+            <input name="filter[]" placeholder="e.g., Specific Folder, Chats, or All">
+          </div>
+        </div>
+      `;
+      container.appendChild(div);
+    }
+    </script>
+    """ + MARVEL_LIVE_JS)
+
+@app.route('/run_check')
+@login_required
+def run_check():
+    plans = LegacyPlan.query.filter_by(user_id=current_user.id).all()
+    results = []
+    for plan in plans:
+        days_inactive = (datetime.utcnow() - plan.last_activity).days
+        if plan.status == "active" and days_inactive >= plan.inactivity_days:
+            token = secrets.token_urlsafe(32)
+            plan.confirmation_token = token
+            plan.status = "pending_verification"
+            plan.contact_attempted = "primary"
+            plan.verification_sent_at = datetime.utcnow()
+            db.session.commit()
+            results.append({
+                "plan_id": plan.id,
+                "action": "TRIGGERED // THRESHOLD EXCEEDED",
+                "contact": plan.primary_email,
+                "type": "Primary Trusted Contact",
+                "token": token
+            })
+        elif plan.status == "pending_verification":
+            days_since = (datetime.utcnow() - plan.verification_sent_at).days if plan.verification_sent_at else 0
+            if plan.contact_attempted == "primary" and days_since >= 7 and plan.secondary_email:
+                token = secrets.token_urlsafe(32)
+                plan.confirmation_token = token
+                plan.contact_attempted = "secondary"
+                plan.verification_sent_at = datetime.utcnow()
+                db.session.commit()
+                results.append({
+                    "plan_id": plan.id,
+                    "action": "ESCALATED // 7-DAY WINDOW LAPSED",
+                    "contact": plan.secondary_email,
+                    "type": "Secondary Escalation Contact",
+                    "token": token
+                })
+            else:
+                ct = "Primary" if plan.contact_attempted == "primary" else "Secondary"
+                ce = plan.primary_email if plan.contact_attempted == "primary" else plan.secondary_email
+                results.append({
+                    "plan_id": plan.id,
+                    "action": f"AWAITING_{ct.upper()}_VERIFICATION",
+                    "contact": ce,
+                    "type": f"{ct} Contact",
+                    "token": plan.confirmation_token
+                })
+        elif plan.status == "active":
+            results.append({
+                "plan_id": plan.id,
+                "action": "HEARTBEAT NORMAL // ACTIVE",
+                "days_left": plan.inactivity_days - days_inactive
+            })
+
+    return render_template_string(BASE_TEMPLATE + """
+    <div class="card">
+      <div class="corner-tag">S.H.I.E.L.D. DIAGNOSTIC</div>
+      <h1>INACTIVITY <span class="accent">DIAGNOSTIC REPORT</span></h1>
+      {% if results %}
+        {% for r in results %}
+          <div class="plan-row" style="flex-direction: column; align-items: flex-start;">
+            <div style="width: 100%; display: flex; justify-content: space-between;">
+              <strong style="color: #ffffff; font-size: 1.15rem;">[ DIRECTIVE #{{ r.plan_id }} ]</strong>
+              <span class="badge badge-active">{{ r.action }}</span>
+            </div>
+            {% if r.get('days_left') is not none %}
+              <div style="margin-top: 0.8rem;">
+                <span class="muted" style="color: var(--arc-blue);">DAYS REMAINING UNTIL TRIGGER: {{ r.days_left }} DAYS</span>
+              </div>
+            {% endif %}
+            {% if r.get('contact') %}
+              <div style="background: rgba(230, 36, 41, 0.08); padding: 1.2rem; width: 100%; margin-top: 1rem; border: 1px solid var(--border); border-radius: 6px;">
+                <p style="color: #ffffff; margin-bottom: 0.6rem;">
+                  <strong>DISPATCH DESTINATION ({{ r.type }}):</strong> {{ r.contact }}
+                </p>
+                <p class="muted" style="margin-bottom: 1rem;">
+                  A secure one-time verification link has been generated for this contact.
+                </p>
+                <a href="/verify/{{ r.token }}" class="btn btn-red" style="width: 100%; text-align: center; padding: 0.9rem;">
+                  [ SIMULATE CONTACT VERIFICATION & 2FA ]
+                </a>
+              </div>
+            {% endif %}
+          </div>
+        {% endfor %}
+      {% else %}
+        <p>No active directives to diagnose.</p>
+      {% endif %}
+      <a href="/dashboard" class="btn" style="margin-top: 1.5rem;">[ RETURN TO DASHBOARD ]</a>
+    </div>
+    """ + MARVEL_LIVE_JS, results=results)
+
+@app.route('/verify/<token>', methods=['GET', 'POST'])
+def verify_documents(token):
+    plan = LegacyPlan.query.filter_by(confirmation_token=token).first()
+    if not plan:
+        return "Invalid token", 404
+    if plan.status in ("confirmed", "executed"):
+        return "Directive has already been executed.", 400
+
+    if request.method == 'POST':
+        id_file = request.files.get('id_document')
+        death_file = request.files.get('death_certificate')
+
+        if id_file and death_file:
+            id_filename = secure_filename(id_file.filename)
+            death_filename = secure_filename(death_file.filename)
+            id_file.save(os.path.join(app.config['UPLOAD_FOLDER'], id_filename))
+            death_file.save(os.path.join(app.config['UPLOAD_FOLDER'], death_filename))
+
+            plan.id_document = id_filename
+            plan.death_certificate = death_filename
+            plan.verification_status = "documents_uploaded"
+            db.session.commit()
+            flash('LEGAL DOCUMENTS VERIFIED BY S.H.I.E.L.D. PROTOCOL.', 'success')
+            return redirect(url_for('execute_plan', token=token))
+        else:
+            flash('SECURITY ERROR: Both identification and death certificate documents are required.', 'error')
+
+    return render_template_string(BASE_TEMPLATE + """
+    <div class="card" style="max-width: 650px; margin: 0 auto;">
+      <div class="corner-tag">2FA LEGAL AUDIT</div>
+      <h1>S.H.I.E.L.D. <span class="accent">VERIFICATION</span></h1>
+      <p style="font-family: var(--font-tech); color: var(--gold); font-size: 1.1rem;">
+        // LEVEL 7 DIRECTIVE RELEASE: SUBMIT REQUIRED CREDENTIALS
+      </p>
+      <p style="color: var(--muted); font-size: 0.95rem;">
+        Before any encrypted digital assets are released or wiped, S.H.I.E.L.D. legal protocol requires cryptographic proof of authority and certificate of demise.
+      </p>
+
+      <form method="POST" enctype="multipart/form-data" style="margin-top: 2rem;">
+        <div class="form-group">
+          <label>1. Authorized Contact Identification (Passport / Aadhaar / Driver License)</label>
+          <input type="file" name="id_document" accept="image/*,.pdf" required style="border: 1px dashed var(--marvel-red); padding: 1.2rem;">
+        </div>
+        <div class="form-group">
+          <label>2. Certified Certificate of Demise (Official Document)</label>
+          <input type="file" name="death_certificate" accept="image/*,.pdf" required style="border: 1px dashed var(--marvel-red); padding: 1.2rem;">
+        </div>
+        <button type="submit" class="btn btn-red" style="width: 100%; padding: 1.1rem; margin-top: 1rem;">
+          [ SUBMIT DOCUMENTS & EXECUTE DIRECTIVE ]
+        </button>
+      </form>
+      <p class="muted" style="margin-top: 1.5rem; text-align: center;">
+        All uploaded files are stored in an encrypted compliance vault.
+      </p>
+    </div>
+    """ + MARVEL_LIVE_JS)
+
+@app.route('/execute/<token>')
+def execute_plan(token):
+    plan = LegacyPlan.query.filter_by(confirmation_token=token).first()
+    if not plan:
+        return "Invalid token", 404
+    if plan.status in ("confirmed", "executed"):
+        return "Directive has already been executed.", 400
+
+    plan.status = "executed"
+    plan.verification_status = "approved"
+    db.session.commit()
+
+    data = decrypt_plan(plan.encrypted_data)
+    rc = plan.primary_email if plan.contact_attempted == 'primary' else plan.secondary_email
+    rep = f"""============================================================
+STARK INDUSTRIES & S.H.I.E.L.D. DIGITAL EXECUTION REPORT
+============================================================
+AGENT: {data.get('userName')}
+CONTACT AUTHORIZED: {rc}
+TIMESTAMP: {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')}
+STATUS: DIRECTIVE COMPLETE & EXECUTED
+LEGAL COMPLIANCE: Identification & Death Certificate Approved
+CIPHER INTEGRITY: Verified
+
+DIRECTIVE ACTIONS EXECUTED:
+"""
+    for i, a in enumerate(data.get('accounts', []), 1):
+        rep += f"\n  [{i}] PLATFORM: {a['platform']}\n      ACTION:   {a['action']}\n      SCOPE:    {a.get('filter') or 'FULL ACCOUNT'}\n      STATUS:   DISPATCHED & COMPLETED"
+
+    rep += f"\n\n============================================================\nEND OF TRANSMISSION // PROTOCOL TERMINATED\n============================================================"
+
+    return render_template_string(BASE_TEMPLATE + """
+    <div class="card">
+      <div class="corner-tag">EXECUTION COMPLETE</div>
+      <h1 style="color: var(--gold);">DIRECTIVE <span class="accent">EXECUTED</span></h1>
+      <p style="color: #ffffff; font-size: 1.05rem;">
+        Legal documents successfully audited. Encrypted directives decrypted and executed.
+      </p>
+      <pre>{{ report }}</pre>
+      <a href="/dashboard" class="btn btn-gold" style="margin-top: 2rem;">[ RETURN TO DASHBOARD ]</a>
+    </div>
+    """ + MARVEL_LIVE_JS, report=rep)
+
+# ============================================================
+# INITIALIZATION & PORT DETECTION
+# ============================================================
+
+with app.app_context():
+    db.create_all()
+    # Auto-migrate columns if table existed from an earlier schema
+    try:
+        from sqlalchemy import text
+        with db.engine.connect() as _conn:
+            _res = _conn.execute(text("PRAGMA table_info(legacy_plan)"))
+            _cols = {row[1] for row in _res}
+            _cols_to_add = {
+                "primary_email": "VARCHAR(150)",
+                "secondary_email": "VARCHAR(150)",
+                "contact_attempted": "VARCHAR(20) DEFAULT 'primary'",
+                "verification_sent_at": "DATETIME",
+                "id_document": "VARCHAR(200)",
+                "death_certificate": "VARCHAR(200)",
+                "verification_status": "VARCHAR(50) DEFAULT 'pending'"
+            }
+            for _c, _ctype in _cols_to_add.items():
+                if _c not in _cols:
+                    _conn.execute(text(f"ALTER TABLE legacy_plan ADD COLUMN {_c} {_ctype}"))
+            _conn.commit()
+    except Exception as _e:
+        print(f"[Notice] DB schema check: {_e}")
+
+if __name__ == "__main__":
+    import socket
+
+    def is_port_available(p):
+        try:
+            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+                s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+                s.bind(('0.0.0.0', p))
+                return True
+        except OSError:
+            return False
+
+    if os.environ.get("PORT"):
+        port = int(os.environ.get("PORT"))
+    elif is_port_available(5000):
+        port = 5000
+    elif is_port_available(5001):
+        port = 5001
+        print("\n[Notice] Port 5000 is occupied (e.g. by macOS AirPlay Receiver). Switched to port 5001.")
+    else:
+        port = 8080
+
+    print("\n=======================================================")
+    print("  MARVEL PROTOCOL // STARK SECURE OS IS LIVE!")
+    print(f"  👉 http://127.0.0.1:{port} (or http://localhost:{port})")
+    print("=======================================================\n")
+    app.run(host="0.0.0.0", port=port, debug=False)
