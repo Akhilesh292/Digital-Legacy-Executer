@@ -95,7 +95,6 @@ body {
     min-height: 100vh; 
     overflow-x: hidden;
 }
-/* CRT Scanline Effect */
 body::after {
     content: " ";
     display: block;
@@ -560,19 +559,4 @@ def verify_documents(token):
       <p style="font-family: var(--mono); color: var(--warn);">> ACTION REQUIRED: UPLOAD ID & DEATH CERTIFICATE TO PROCEED.</p>
       <form method="POST" enctype="multipart/form-data" style="margin-top: 2rem;">
         <div class="form-group">
-          <label>> Upload Your ID (Aadhaar / Passport)</label>
-          <input type="file" name="id_document" accept="image/*,.pdf" required style="border: 1px dashed var(--green); padding: 1rem;">
-        </div>
-        <div class="form-group">
-          <label>> Upload Death Certificate of Deceased</label>
-          <input type="file" name="death_certificate" accept="image/*,.pdf" required style="border: 1px dashed var(--green); padding: 1rem;">
-        </div>
-        <button type="submit" class="btn-green" style="width: 100%; padding: 1rem;">[ SUBMIT DOCUMENTS ]</button>
-      </form>
-      <p class="muted" style="margin-top: 1.5rem; text-align: center;">Your documents are encrypted and only used for legal verification.</p>
-    </div>
-    """ + MATRIX_JS)
-
-@app.route('/execute/<token>')
-def execute_plan(token):
-    plan
+          <label>>
