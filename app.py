@@ -17,7 +17,6 @@ app.config['SECRET_KEY'] = os.environ.get("SECRET_KEY", secrets.token_hex(32))
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL", "sqlite:///legacy.db")
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-# Configure upload folder for documents
 UPLOAD_FOLDER = 'uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 if not os.path.exists(UPLOAD_FOLDER):
@@ -58,7 +57,6 @@ class LegacyPlan(db.Model):
     contact_attempted = db.Column(db.String(20), default="primary")
     verification_sent_at = db.Column(db.DateTime, nullable=True)
     
-    # NEW: Document Verification Fields
     id_document = db.Column(db.String(200), nullable=True)
     death_certificate = db.Column(db.String(200), nullable=True)
     verification_status = db.Column(db.String(50), default="pending")
@@ -213,9 +211,9 @@ def create_plan():
         <h2>Target Assets</h2>
         <div id="accounts"><div class="account-block" style="background: #000; padding: 1.5rem; border: 1px solid #30363d; margin-bottom: 1rem;">
           <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem;">
-            <div class="form-group" style="margin:0;"><label>> Platform</label><select name="platform[]"><option>WhatsApp</option><option>Discord</option><option>X</option><option>Threads</option><option>Instagram</option><option>Pinterest</option><option>LinkedIn</option><option>Bank Details</option></select></div>
+            <div class="form-group" style="margin:0;"><label>> Platform</label><select name="platform[]"><option>WhatsApp</option><option>Discord</option><option>X</option><option>Threads</option><option>Instagram</option><option>Pinterest</option><option>LinkedIn</option></select></div>
             <div class="form-group" style="margin:0;"><label>> Directive</label><select name="action[]"><option>Delete</option><option>Transfer to contact</option><option>Archive privately</option></select></div>
-            <div class="form-group" style="margin:0;"><label>> Filter (e.g. Bank Action)</label><input name="filter[]" placeholder="e.g., Account Balance"></div>
+            <div class="form-group" style="margin:0;"><label>> Filter (Optional)</label><input name="filter[]" placeholder="e.g., Specific Album / Chat"></div>
           </div>
         </div></div>
         <button type="button" onclick="addRow()" class="btn" style="margin-bottom: 2rem;">[ + ADD ]</button><br>
@@ -226,7 +224,7 @@ def create_plan():
     function addRow() {
       const d = document.getElementById('accounts'); const r = document.createElement('div');
       r.style = "background: #000; padding: 1.5rem; border: 1px solid #30363d; margin-bottom: 1rem;";
-      r.innerHTML = `<div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem;"><div class="form-group" style="margin:0;"><label>> Platform</label><select name="platform[]"><option>WhatsApp</option><option>Discord</option><option>X</option><option>Threads</option><option>Instagram</option><option>Pinterest</option><option>LinkedIn</option><option>Bank Details</option></select></div><div class="form-group" style="margin:0;"><label>> Directive</label><select name="action[]"><option>Delete</option><option>Transfer to contact</option><option>Archive privately</option></select></div><div class="form-group" style="margin:0;"><label>> Filter</label><input name="filter[]" placeholder="e.g., Account Balance"></div></div>`;
+      r.innerHTML = `<div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem;"><div class="form-group" style="margin:0;"><label>> Platform</label><select name="platform[]"><option>WhatsApp</option><option>Discord</option><option>X</option><option>Threads</option><option>Instagram</option><option>Pinterest</option><option>LinkedIn</option></select></div><div class="form-group" style="margin:0;"><label>> Directive</label><select name="action[]"><option>Delete</option><option>Transfer to contact</option><option>Archive privately</option></select></div><div class="form-group" style="margin:0;"><label>> Filter</label><input name="filter[]" placeholder="e.g., Specific Album"></div></div>`;
       d.appendChild(r);
     }
     </script>
@@ -277,7 +275,6 @@ def verify_documents(token):
     if plan.status in ("confirmed", "executed"): return "Already executed", 400
 
     if request.method == 'POST':
-        # Handle File Uploads
         id_file = request.files.get('id_document')
         death_file = request.files.get('death_certificate')
         
