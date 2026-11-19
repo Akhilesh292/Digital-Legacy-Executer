@@ -202,7 +202,7 @@ def create_plan():
           <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem;">
             <div class="form-group" style="margin:0;"><label>> Platform</label><select name="platform[]"><option>WhatsApp</option><option>Discord</option><option>X</option><option>Threads</option><option>Instagram</option><option>Pinterest</option><option>LinkedIn</option><option>Bank Details</option></select></div>
             <div class="form-group" style="margin:0;"><label>> Directive</label><select name="action[]"><option>Delete</option><option>Transfer to contact</option><option>Archive privately</option></select></div>
-            <div class="form-group" style="margin:0;"><label>> Filter (e.g. Bank Name / Album)</label><input name="filter[]" placeholder="e.g., Chase Bank"></div>
+            <div class="form-group" style="margin:0;"><label>> Filter (e.g. Bank Action)</label><input name="filter[]" placeholder="e.g., Account Balance"></div>
           </div>
         </div></div>
         <button type="button" onclick="addRow()" class="btn" style="margin-bottom: 2rem;">[ + ADD ]</button><br>
@@ -213,7 +213,7 @@ def create_plan():
     function addRow() {
       const d = document.getElementById('accounts'); const r = document.createElement('div');
       r.style = "background: #000; padding: 1.5rem; border: 1px solid #30363d; margin-bottom: 1rem;";
-      r.innerHTML = `<div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem;"><div class="form-group" style="margin:0;"><label>> Platform</label><select name="platform[]"><option>WhatsApp</option><option>Discord</option><option>X</option><option>Threads</option><option>Instagram</option><option>Pinterest</option><option>LinkedIn</option><option>Bank Details</option></select></div><div class="form-group" style="margin:0;"><label>> Directive</label><select name="action[]"><option>Delete</option><option>Transfer to contact</option><option>Archive privately</option></select></div><div class="form-group" style="margin:0;"><label>> Filter</label><input name="filter[]" placeholder="e.g., Chase Bank"></div></div>`;
+      r.innerHTML = `<div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem;"><div class="form-group" style="margin:0;"><label>> Platform</label><select name="platform[]"><option>WhatsApp</option><option>Discord</option><option>X</option><option>Threads</option><option>Instagram</option><option>Pinterest</option><option>LinkedIn</option><option>Bank Details</option></select></div><div class="form-group" style="margin:0;"><label>> Directive</label><select name="action[]"><option>Delete</option><option>Transfer to contact</option><option>Archive privately</option></select></div><div class="form-group" style="margin:0;"><label>> Filter</label><input name="filter[]" placeholder="e.g., Account Balance"></div></div>`;
       d.appendChild(r);
     }
     </script>
