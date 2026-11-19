@@ -1,5 +1,5 @@
 """
-GRANT SECURITY — CYBERSECURITY THEME (WITH CONTACT PREFERENCES)
+GRANT SECURITY — CYBERSECURITY THEME (WITH EMAIL & BANK PREFERENCES)
 """
 import os
 import secrets
@@ -42,8 +42,8 @@ class LegacyPlan(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     encrypted_data = db.Column(db.Text, nullable=False)
-    primary_contact = db.Column(db.String(150), nullable=False)
-    backup_contact = db.Column(db.String(150), nullable=True)
+    primary_email = db.Column(db.String(150), nullable=False)
+    secondary_email = db.Column(db.String(150), nullable=True)
     inactivity_days = db.Column(db.Integer, default=180)
     last_activity = db.Column(db.DateTime, default=datetime.utcnow)
     status = db.Column(db.String(50), default="active")
@@ -167,8 +167,8 @@ def dashboard():
           <div class="plan-row" style="flex-direction: column; align-items: flex-start;">
             <div style="width: 100%; display: flex; justify-content: space-between;"><strong>[ PLAN_ID: {{ plan.id }} ]</strong><span class="badge badge-{{ plan.status }}">{{ plan.status.replace('_', ' ') }}</span></div>
             <div style="margin-top: 1rem; width: 100%;">
-              <span class="muted">PRIMARY: {{ plan.primary_contact }}</span>
-              <span class="muted">BACKUP: {{ plan.backup_contact or 'NONE' }}</span>
+              <span class="muted">PRIMARY E-MAIL: {{ plan.primary_email }}</span>
+              <span class="muted">SECONDARY E-MAIL: {{ plan.secondary_email or 'NONE' }}</span>
               <span class="muted">THRESHOLD: {{ plan.inactivity_days }} days | LAST_CHECKIN: {{ plan.last_activity.strftime('%Y-%m-%d') }}</span>
             </div>
           </div>
@@ -184,25 +184,25 @@ def create_plan():
     if request.method == 'POST':
         accounts = [{"platform": p, "action": a, "filter": f.strip()} for p, a, f in zip(request.form.getlist('platform[]'), request.form.getlist('action[]'), request.form.getlist('filter[]')) if p and a]
         plan_data = {"userName": current_user.name, "accounts": accounts, "createdAt": datetime.utcnow().isoformat()}
-        db.session.add(LegacyPlan(user_id=current_user.id, encrypted_data=encrypt_plan(plan_data), primary_contact=request.form['primary_contact'].strip().lower(), backup_contact=request.form.get('backup_contact', '').strip().lower() or None, inactivity_days=int(request.form['inactivity_days']), last_activity=datetime.utcnow(), status="active"))
+        db.session.add(LegacyPlan(user_id=current_user.id, encrypted_data=encrypt_plan(plan_data), primary_email=request.form['primary_email'].strip().lower(), secondary_email=request.form.get('secondary_email', '').strip().lower() or None, inactivity_days=int(request.form['inactivity_days']), last_activity=datetime.utcnow(), status="active"))
         db.session.commit()
         flash('PROTOCOL SAVED.', 'success')
         return redirect(url_for('dashboard'))
     return render_template_string(BASE_TEMPLATE + """
     <div class="card"><h1>Initialize Protocol</h1>
       <form method="POST" style="margin-top: 2rem;">
-        <h2>Contact Escalation Path</h2>
+        <h2>E-mail Escalation Path</h2>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
-          <div class="form-group" style="margin:0;"><label>> Primary Contact</label><input name="primary_contact" type="email" required></div>
-          <div class="form-group" style="margin:0;"><label>> Backup Contact</label><input name="backup_contact" type="email"><span class="muted" style="text-transform:none;">Used after 7 days of no response.</span></div>
+          <div class="form-group" style="margin:0;"><label>> Primary E-mail</label><input name="primary_email" type="email" required></div>
+          <div class="form-group" style="margin:0;"><label>> Secondary E-mail</label><input name="secondary_email" type="email"><span class="muted" style="text-transform:none;">Used after 7 days of no response.</span></div>
         </div>
         <div class="form-group"><label>> Inactivity Threshold (Days)</label><input name="inactivity_days" type="number" value="180" required min="1"></div>
         <h2>Target Assets</h2>
         <div id="accounts"><div class="account-block" style="background: #000; padding: 1.5rem; border: 1px solid #30363d; margin-bottom: 1rem;">
           <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem;">
-            <div class="form-group" style="margin:0;"><label>> Platform</label><select name="platform[]"><option>Facebook</option><option>Google Photos</option><option>Email</option><option>Instagram</option></select></div>
+            <div class="form-group" style="margin:0;"><label>> Platform</label><select name="platform[]"><option>WhatsApp</option><option>Discord</option><option>X</option><option>Threads</option><option>Instagram</option><option>Pinterest</option><option>LinkedIn</option><option>Bank Details</option></select></div>
             <div class="form-group" style="margin:0;"><label>> Directive</label><select name="action[]"><option>Delete</option><option>Transfer to contact</option><option>Archive privately</option></select></div>
-            <div class="form-group" style="margin:0;"><label>> Filter</label><input name="filter[]" placeholder="e.g., album: Family"></div>
+            <div class="form-group" style="margin:0;"><label>> Filter (e.g. Bank Name / Album)</label><input name="filter[]" placeholder="e.g., Chase Bank"></div>
           </div>
         </div></div>
         <button type="button" onclick="addRow()" class="btn" style="margin-bottom: 2rem;">[ + ADD ]</button><br>
@@ -213,7 +213,7 @@ def create_plan():
     function addRow() {
       const d = document.getElementById('accounts'); const r = document.createElement('div');
       r.style = "background: #000; padding: 1.5rem; border: 1px solid #30363d; margin-bottom: 1rem;";
-      r.innerHTML = `<div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem;"><div class="form-group" style="margin:0;"><label>> Platform</label><select name="platform[]"><option>Facebook</option><option>Google Photos</option><option>Email</option><option>Instagram</option></select></div><div class="form-group" style="margin:0;"><label>> Directive</label><select name="action[]"><option>Delete</option><option>Transfer to contact</option><option>Archive privately</option></select></div><div class="form-group" style="margin:0;"><label>> Filter</label><input name="filter[]" placeholder="e.g., album: Family"></div></div>`;
+      r.innerHTML = `<div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem;"><div class="form-group" style="margin:0;"><label>> Platform</label><select name="platform[]"><option>WhatsApp</option><option>Discord</option><option>X</option><option>Threads</option><option>Instagram</option><option>Pinterest</option><option>LinkedIn</option><option>Bank Details</option></select></div><div class="form-group" style="margin:0;"><label>> Directive</label><select name="action[]"><option>Delete</option><option>Transfer to contact</option><option>Archive privately</option></select></div><div class="form-group" style="margin:0;"><label>> Filter</label><input name="filter[]" placeholder="e.g., Chase Bank"></div></div>`;
       d.appendChild(r);
     }
     </script>
@@ -228,15 +228,15 @@ def run_check():
         days_inactive = (datetime.utcnow() - plan.last_activity).days
         if plan.status == "active" and days_inactive >= plan.inactivity_days:
             token = secrets.token_urlsafe(32); plan.confirmation_token = token; plan.status = "pending_verification"; plan.contact_attempted = "primary"; plan.verification_sent_at = datetime.utcnow(); db.session.commit()
-            results.append({"plan_id": plan.id, "action": "TRIGGERED", "contact": plan.primary_contact, "type": "Primary", "token": token})
+            results.append({"plan_id": plan.id, "action": "TRIGGERED", "contact": plan.primary_email, "type": "Primary E-mail", "token": token})
         elif plan.status == "pending_verification":
             days_since = (datetime.utcnow() - plan.verification_sent_at).days
-            if plan.contact_attempted == "primary" and days_since >= 7 and plan.backup_contact:
-                token = secrets.token_urlsafe(32); plan.confirmation_token = token; plan.contact_attempted = "backup"; plan.verification_sent_at = datetime.utcnow(); db.session.commit()
-                results.append({"plan_id": plan.id, "action": "ESCALATED", "contact": plan.backup_contact, "type": "Backup", "token": token})
+            if plan.contact_attempted == "primary" and days_since >= 7 and plan.secondary_email:
+                token = secrets.token_urlsafe(32); plan.confirmation_token = token; plan.contact_attempted = "secondary"; plan.verification_sent_at = datetime.utcnow(); db.session.commit()
+                results.append({"plan_id": plan.id, "action": "ESCALATED", "contact": plan.secondary_email, "type": "Secondary E-mail", "token": token})
             else:
-                ct = "Primary" if plan.contact_attempted == "primary" else "Backup"; ce = plan.primary_contact if plan.contact_attempted == "primary" else plan.backup_contact
-                results.append({"plan_id": plan.id, "action": f"AWAITING_{ct.upper()}", "contact": ce, "type": ct, "token": plan.confirmation_token})
+                ct = "Primary" if plan.contact_attempted == "primary" else "Secondary"; ce = plan.primary_email if plan.contact_attempted == "primary" else plan.secondary_email
+                results.append({"plan_id": plan.id, "action": f"AWAITING_{ct.upper()}", "contact": ce, "type": f"{ct} E-mail", "token": plan.confirmation_token})
         elif plan.status == "active":
             results.append({"plan_id": plan.id, "action": "ACTIVE", "days_left": plan.inactivity_days - days_inactive})
 
@@ -247,7 +247,7 @@ def run_check():
             <strong>[ ID: {{ r.plan_id }} ] > {{ r.action }}</strong>
             {% if r.get('contact') %}
               <div style="background: rgba(0,255,65,0.05); padding: 1rem; width: 100%; margin-top: 1rem;">
-                <p class="muted" style="color:#fff;">TARGET: {{ r.contact }}</p>
+                <p class="muted" style="color:#fff;">TARGET ({{ r.type }}): {{ r.contact }}</p>
                 <a href="/confirm/{{ r.token }}" class="btn btn-green" style="width: 100%; text-align: center;">[ SIMULATE_CONFIRMATION ]</a>
               </div>
             {% endif %}
@@ -265,7 +265,7 @@ def confirm(token):
     plan.status = "executed"
     db.session.commit()
     data = decrypt_plan(plan.encrypted_data)
-    rc = plan.primary_contact if plan.contact_attempted == 'primary' else plan.backup_contact
+    rc = plan.primary_email if plan.contact_attempted == 'primary' else plan.secondary_email
     rep = f"EXECUTION REPORT\nUser: {data.get('userName')}\nContact: {rc}\nStatus: COMPLETE\n\nACTIONS:\n"
     for i, a in enumerate(data.get('accounts', []), 1):
         rep += f"{i}. {a['platform']} - {a['action']} ({a.get('filter','')})\n"
