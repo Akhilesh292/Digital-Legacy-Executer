@@ -1,5 +1,5 @@
 """
-GRANT SECURITY — CYBERSECURITY THEME (WITH LIVE MATRIX BACKGROUND)
+GRANT SECURITY — PREMIUM CYBERSECURITY COMMAND CENTER
 """
 import os
 import secrets
@@ -69,51 +69,242 @@ def encrypt_plan(data: dict) -> str: return fernet.encrypt(json.dumps(data).enco
 def decrypt_plan(encrypted: str) -> dict: return json.loads(fernet.decrypt(encrypted.encode()).decode())
 
 BASE_TEMPLATE = """
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>GRANT Security</title>
-<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&display=swap" rel="stylesheet">
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>GRANT Security | Command Center</title>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
-:root { --bg: #050505; --panel: #0d1117; --green: #00ff41; --text: #c9d1d9; --muted: #8b949e; --border: #30363d; --danger: #ff3366; --warn: #ffcc00; --mono: 'Fira Code', monospace; }
+:root { 
+    --bg: #020202; 
+    --panel: rgba(10, 15, 20, 0.85); 
+    --green: #00ff41; 
+    --green-dim: #00cc33;
+    --cyan: #00ffff;
+    --text: #e6edf3; 
+    --muted: #8b949e; 
+    --border: #1b222c; 
+    --danger: #ff003c; 
+    --warn: #ffb000; 
+    --mono: 'Fira Code', monospace;
+    --tech: 'Share Tech Mono', monospace;
+}
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: sans-serif; background-color: var(--bg); color: var(--text); line-height: 1.6; min-height: 100vh; overflow-x: hidden; }
-#matrix-canvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; opacity: 0.15; }
-nav { background: rgba(13, 17, 23, 0.95); padding: 1rem 2rem; display: flex; justify-content: space-between; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 50; backdrop-filter: blur(5px); }
-.brand { color: var(--green); font-family: var(--mono); font-weight: 600; font-size: 1.3rem; text-decoration: none; text-transform: uppercase; text-shadow: 0 0 5px var(--green); }
-.nav-links { display: flex; gap: 1.5rem; font-family: var(--mono); }
-nav a:not(.brand) { color: var(--text); text-decoration: none; font-size: 0.9rem; padding: 0.5rem; transition: 0.3s; }
-nav a:not(.brand):hover { color: var(--green); text-shadow: 0 0 10px var(--green); }
+body { 
+    font-family: var(--mono); 
+    background-color: var(--bg); 
+    color: var(--text); 
+    line-height: 1.6; 
+    min-height: 100vh; 
+    overflow-x: hidden;
+}
+/* CRT Scanline Effect */
+body::after {
+    content: " ";
+    display: block;
+    position: fixed;
+    top: 0; left: 0; bottom: 0; right: 0;
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+    z-index: 2;
+    background-size: 100% 2px, 3px 100%;
+    pointer-events: none;
+}
+#matrix-canvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 0; opacity: 0.15; }
+nav { 
+    background: rgba(2, 2, 2, 0.9); 
+    padding: 1rem 2rem; 
+    display: flex; 
+    justify-content: space-between; 
+    border-bottom: 1px solid var(--green); 
+    position: sticky; 
+    top: 0; 
+    z-index: 100; 
+    backdrop-filter: blur(10px);
+    box-shadow: 0 0 15px rgba(0, 255, 65, 0.2);
+}
+.brand { 
+    color: var(--green); 
+    font-family: var(--tech); 
+    font-weight: 600; 
+    font-size: 1.5rem; 
+    text-decoration: none; 
+    text-transform: uppercase; 
+    text-shadow: 0 0 10px var(--green);
+    letter-spacing: 2px;
+}
+.nav-links { display: flex; gap: 1.5rem; font-family: var(--tech); }
+nav a:not(.brand) { 
+    color: var(--text); 
+    text-decoration: none; 
+    font-size: 1rem; 
+    padding: 0.5rem; 
+    transition: 0.3s; 
+    border-bottom: 2px solid transparent;
+}
+nav a:not(.brand):hover { 
+    color: var(--green); 
+    text-shadow: 0 0 8px var(--green); 
+    border-bottom: 2px solid var(--green);
+}
 .container { max-width: 1000px; margin: 3rem auto; padding: 0 1.5rem; position: relative; z-index: 10; }
-.card { background: rgba(13, 17, 23, 0.85); padding: 2.5rem; border-radius: 8px; border: 1px solid var(--border); border-left: 4px solid var(--green); margin-bottom: 2rem; backdrop-filter: blur(10px); box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5); }
-h1 { color: #fff; font-family: var(--mono); font-size: 2rem; margin-bottom: 1rem; text-transform: uppercase; text-shadow: 0 0 8px rgba(0, 255, 65, 0.3); }
-h2 { color: var(--green); font-family: var(--mono); font-size: 1.2rem; margin: 2rem 0 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; }
+.card { 
+    background: var(--panel); 
+    padding: 3rem; 
+    border-radius: 4px; 
+    border: 1px solid var(--border); 
+    border-left: 4px solid var(--green); 
+    margin-bottom: 2rem; 
+    backdrop-filter: blur(15px); 
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8), inset 0 0 20px rgba(0, 255, 65, 0.05);
+    position: relative;
+}
+.card::before {
+    content: ""; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, transparent, var(--green), transparent);
+    opacity: 0.5;
+}
+h1 { 
+    color: #fff; 
+    font-family: var(--tech); 
+    font-size: 2.2rem; 
+    margin-bottom: 1rem; 
+    text-transform: uppercase; 
+    text-shadow: 0 0 15px rgba(0, 255, 65, 0.5);
+    letter-spacing: 2px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 1rem;
+}
+h2 { 
+    color: var(--green); 
+    font-family: var(--tech); 
+    font-size: 1.3rem; 
+    margin: 2rem 0 1rem; 
+    border-bottom: 1px dashed var(--border); 
+    padding-bottom: 0.5rem; 
+    text-shadow: 0 0 5px rgba(0, 255, 65, 0.3);
+}
 p { margin-bottom: 1rem; color: var(--muted); }
 .form-group { margin-bottom: 1.5rem; }
-label { display: block; margin-bottom: 0.5rem; font-family: var(--mono); font-size: 0.85rem; color: var(--green); text-transform: uppercase; }
-input, select { width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 4px; font-family: var(--mono); background: rgba(0,0,0,0.7); color: #fff; transition: 0.3s; }
-input:focus, select:focus { outline: none; border-color: var(--green); box-shadow: 0 0 15px rgba(0, 255, 65, 0.2); }
-button, .btn { display: inline-block; padding: 0.8rem 1.5rem; background: transparent; color: var(--green); border: 1px solid var(--green); border-radius: 4px; font-family: var(--mono); font-weight: 600; text-transform: uppercase; cursor: pointer; text-decoration: none; margin-top: 0.5rem; transition: 0.3s; }
-button:hover, .btn:hover { background: rgba(0, 255, 65, 0.1); box-shadow: 0 0 20px rgba(0, 255, 65, 0.4); text-shadow: 0 0 5px var(--green); }
-.btn-green { background: var(--green); color: #000; }
-.btn-green:hover { background: #fff; border-color: #fff; box-shadow: 0 0 20px #fff; }
-.flash { padding: 1rem; border-radius: 4px; margin-bottom: 1.5rem; font-family: var(--mono); font-size: 0.9rem; border: 1px solid; background: rgba(0,0,0,0.8); }
-.flash.success { border-color: var(--green); color: var(--green); box-shadow: 0 0 10px rgba(0, 255, 65, 0.2); }
-.flash.error { border-color: var(--danger); color: var(--danger); box-shadow: 0 0 10px rgba(255, 51, 102, 0.2); }
-.plan-row { display: flex; justify-content: space-between; align-items: center; padding: 1.25rem; background: rgba(0,0,0,0.6); border: 1px solid var(--border); border-radius: 4px; margin-bottom: 1rem; font-family: var(--mono); transition: 0.3s; }
-.plan-row:hover { border-color: var(--green); box-shadow: 0 0 10px rgba(0, 255, 65, 0.1); }
-.badge { padding: 0.25rem 0.75rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; font-family: var(--mono); }
-.badge-active { border: 1px solid var(--green); color: var(--green); }
-.badge-pending_verification { border: 1px solid var(--warn); color: var(--warn); }
-.badge-executed { border: 1px solid #58a6ff; color: #58a6ff; }
-pre { background: rgba(0,0,0,0.9); color: var(--green); padding: 1.5rem; border-radius: 4px; font-family: var(--mono); font-size: 0.85rem; border: 1px solid var(--border); border-left: 3px solid var(--green); white-space: pre-wrap; }
-.muted { color: var(--muted); font-size: 0.85rem; display: block; margin-top: 0.25rem; }
+label { 
+    display: block; 
+    margin-bottom: 0.5rem; 
+    font-family: var(--tech); 
+    font-size: 0.9rem; 
+    color: var(--green); 
+    text-transform: uppercase; 
+    letter-spacing: 1px;
+}
+input, select { 
+    width: 100%; 
+    padding: 0.8rem; 
+    border: 1px solid var(--border); 
+    border-radius: 4px; 
+    font-family: var(--mono); 
+    background: rgba(0,0,0,0.8); 
+    color: var(--green); 
+    transition: 0.3s;
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+}
+input:focus, select:focus { 
+    outline: none; 
+    border-color: var(--green); 
+    box-shadow: 0 0 15px rgba(0, 255, 65, 0.3), inset 0 0 10px rgba(0,255,65,0.1); 
+}
+button, .btn { 
+    display: inline-block; 
+    padding: 0.9rem 1.8rem; 
+    background: transparent; 
+    color: var(--green); 
+    border: 1px solid var(--green); 
+    border-radius: 4px; 
+    font-family: var(--tech); 
+    font-weight: 600; 
+    font-size: 1.1rem;
+    text-transform: uppercase; 
+    cursor: pointer; 
+    text-decoration: none; 
+    margin-top: 0.5rem; 
+    transition: 0.3s;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 0 10px rgba(0, 255, 65, 0.1);
+}
+button:hover, .btn:hover { 
+    background: rgba(0, 255, 65, 0.1); 
+    box-shadow: 0 0 25px rgba(0, 255, 65, 0.5); 
+    text-shadow: 0 0 8px var(--green); 
+}
+.btn-green { 
+    background: var(--green); 
+    color: #000; 
+    box-shadow: 0 0 15px rgba(0, 255, 65, 0.4);
+}
+.btn-green:hover { 
+    background: #fff; 
+    border-color: #fff; 
+    box-shadow: 0 0 30px #fff; 
+}
+.flash { 
+    padding: 1rem; 
+    border-radius: 4px; 
+    margin-bottom: 1.5rem; 
+    font-family: var(--mono); 
+    font-size: 0.95rem; 
+    border: 1px solid; 
+    background: rgba(0,0,0,0.9);
+    display: flex;
+    align-items: center;
+}
+.flash::before { content: "> "; margin-right: 10px; font-weight: bold; }
+.flash.success { border-color: var(--green); color: var(--green); box-shadow: 0 0 15px rgba(0, 255, 65, 0.2); }
+.flash.error { border-color: var(--danger); color: var(--danger); box-shadow: 0 0 15px rgba(255, 0, 60, 0.2); }
+.plan-row { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    padding: 1.5rem; 
+    background: rgba(0,0,0,0.6); 
+    border: 1px solid var(--border); 
+    border-radius: 4px; 
+    margin-bottom: 1rem; 
+    font-family: var(--mono); 
+    transition: 0.3s; 
+}
+.plan-row:hover { 
+    border-color: var(--green); 
+    box-shadow: 0 0 20px rgba(0, 255, 65, 0.1); 
+    transform: translateX(5px);
+}
+.badge { 
+    padding: 0.3rem 1rem; 
+    border-radius: 4px; 
+    font-size: 0.8rem; 
+    font-weight: 600; 
+    text-transform: uppercase; 
+    font-family: var(--tech); 
+    letter-spacing: 1px;
+}
+.badge-active { border: 1px solid var(--green); color: var(--green); box-shadow: 0 0 10px rgba(0,255,65,0.3); }
+.badge-pending_verification { border: 1px solid var(--warn); color: var(--warn); box-shadow: 0 0 10px rgba(255,176,0,0.3); }
+.badge-executed { border: 1px solid var(--cyan); color: var(--cyan); box-shadow: 0 0 10px rgba(0,255,255,0.3); }
+pre { 
+    background: rgba(0,0,0,0.95); 
+    color: var(--green); 
+    padding: 1.5rem; 
+    border-radius: 4px; 
+    font-family: var(--mono); 
+    font-size: 0.9rem; 
+    border: 1px solid var(--border); 
+    border-left: 3px solid var(--green); 
+    white-space: pre-wrap; 
+    box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
+}
+.muted { color: var(--muted); font-size: 0.85rem; display: block; margin-top: 0.25rem; font-family: var(--mono); }
 </style></head><body>
 <canvas id="matrix-canvas"></canvas>
 <nav><a href="/" class="brand">[ GRANT_SYS ]</a><div class="nav-links"><a href="/">~ /home</a>
 {% if current_user.is_authenticated %}<a href="/dashboard">~ /dashboard</a><a href="/create_plan">~ /new_plan</a><a href="/logout" style="color: var(--danger);">~ /logout</a>
 {% else %}<a href="/signup">~ /signup</a><a href="/login">~ /login</a>{% endif %}</div></nav>
-<div class="container">{% with messages = get_flashed_messages(with_categories=true) %}{% for category, message in messages %}<div class="flash {{ category }}">> {{ message }}</div>{% endfor %}{% endwith %}
+<div class="container">{% with messages = get_flashed_messages(with_categories=true) %}{% for category, message in messages %}<div class="flash {{ category }}">{{ message }}</div>{% endfor %}{% endwith %}
 """
 
-# Matrix Effect JavaScript
 MATRIX_JS = """
 <script>
 const canvas = document.getElementById('matrix-canvas');
@@ -121,24 +312,24 @@ const ctx = canvas.getContext('2d');
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*()_+{}|:<>?";
-const fontSize = 16;
+const fontSize = 18;
 const columns = canvas.width / fontSize;
 const drops = [];
 for (let x = 0; x < columns; x++) drops[x] = 1;
 
 function draw() {
-    ctx.fillStyle = "rgba(5, 5, 5, 0.05)";
+    ctx.fillStyle = "rgba(2, 2, 2, 0.08)";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     ctx.fillStyle = "#00ff41";
-    ctx.font = fontSize + "px monospace";
+    ctx.font = fontSize + "px 'Share Tech Mono', monospace";
     for (let i = 0; i < drops.length; i++) {
         const text = letters.charAt(Math.floor(Math.random() * letters.length));
         ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-        if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+        if (drops[i] * fontSize > canvas.height && Math.random() > 0.95) drops[i] = 0;
         drops[i]++;
     }
 }
-setInterval(draw, 35);
+setInterval(draw, 40);
 window.addEventListener('resize', () => {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
@@ -149,12 +340,24 @@ window.addEventListener('resize', () => {
 @app.route('/')
 def index():
     return render_template_string(BASE_TEMPLATE + """
-    <div class="card" style="text-align: center; padding: 4rem 2rem;"><h1>GRANT Security</h1>
-      <p style="font-family: var(--mono);">> INITIALIZING PROTOCOL...<br>> DIGITAL LEGACY ENCRYPTION ACTIVE.<br><br>Ensure your digital footprint is secured and handled exactly according to your directives. Set up an encrypted plan while alive. The system will execute the rest upon verified human confirmation.</p>
-      <div style="margin-top: 2rem; display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
-        {% if not current_user.is_authenticated %}<a href="/signup" class="btn btn-green" style="padding: 1rem 2rem;">[ CREATE_ACCOUNT ]</a><a href="/login" class="btn" style="padding: 1rem 2rem;">[ SYSTEM_LOGIN ]</a>
-        {% else %}<a href="/create_plan" class="btn btn-green" style="padding: 1rem 2rem;">[ NEW_PLAN ]</a><a href="/dashboard" class="btn" style="padding: 1rem 2rem;">[ DASHBOARD ]</a>{% endif %}
-      </div></div>
+    <div class="card" style="text-align: center; padding: 5rem 2rem;">
+      <h1 style="font-size: 3rem; border: none; text-shadow: 0 0 20px var(--green);">GRANT Security</h1>
+      <p style="font-family: var(--tech); font-size: 1.2rem; color: var(--green); margin-bottom: 2rem;">
+        > SYSTEM ONLINE<br>> AES-256 ENCRYPTION ACTIVE<br>> AWAITING OPERATOR INPUT
+      </p>
+      <p style="max-width: 700px; margin: 0 auto 3rem; color: var(--text);">
+        Ensure your digital footprint is secured and handled exactly according to your directives. Set up an encrypted legacy plan while alive. The system will execute the rest upon verified human confirmation.
+      </p>
+      <div style="display: flex; justify-content: center; gap: 1.5rem; flex-wrap: wrap;">
+        {% if not current_user.is_authenticated %}
+          <a href="/signup" class="btn btn-green" style="padding: 1rem 2.5rem;">[ INITIALIZE_ACCOUNT ]</a>
+          <a href="/login" class="btn" style="padding: 1rem 2.5rem;">[ SYSTEM_LOGIN ]</a>
+        {% else %}
+          <a href="/create_plan" class="btn btn-green" style="padding: 1rem 2.5rem;">[ NEW_PROTOCOL ]</a>
+          <a href="/dashboard" class="btn" style="padding: 1rem 2.5rem;">[ DASHBOARD ]</a>
+        {% endif %}
+      </div>
+    </div>
     """ + MATRIX_JS)
 
 @app.route('/signup', methods=['GET', 'POST'])
@@ -166,16 +369,18 @@ def signup():
             return redirect(url_for('signup'))
         db.session.add(User(email=email, name=name, password_hash=generate_password_hash(password)))
         db.session.commit()
-        flash('SUCCESS: Account created.', 'success')
+        flash('SUCCESS: Account created. Proceed to login.', 'success')
         return redirect(url_for('login'))
     return render_template_string(BASE_TEMPLATE + """
-    <div class="card" style="max-width: 500px; margin: 0 auto;"><h1>Register</h1>
+    <div class="card" style="max-width: 500px; margin: 0 auto;">
+      <h1>Register Operator</h1>
       <form method="POST" style="margin-top: 2rem;">
         <div class="form-group"><label>> Full Name</label><input name="name" required></div>
         <div class="form-group"><label>> Email Address</label><input name="email" type="email" required></div>
         <div class="form-group"><label>> Access Key</label><input name="password" type="password" required minlength="6"></div>
         <button type="submit" class="btn-green" style="width: 100%;">[ INITIALIZE ]</button>
-      </form></div>
+      </form>
+    </div>
     """ + MATRIX_JS)
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -184,16 +389,18 @@ def login():
         user = User.query.filter_by(email=request.form['email'].strip().lower()).first()
         if user and check_password_hash(user.password_hash, request.form['password']):
             login_user(user)
-            flash('ACCESS GRANTED.', 'success')
+            flash('ACCESS GRANTED. Welcome to the mainframe.', 'success')
             return redirect(url_for('dashboard'))
-        flash('ACCESS DENIED.', 'error')
+        flash('ACCESS DENIED: Invalid credentials.', 'error')
     return render_template_string(BASE_TEMPLATE + """
-    <div class="card" style="max-width: 500px; margin: 0 auto;"><h1>Login</h1>
+    <div class="card" style="max-width: 500px; margin: 0 auto;">
+      <h1>System Login</h1>
       <form method="POST" style="margin-top: 2rem;">
         <div class="form-group"><label>> Email Address</label><input name="email" type="email" required></div>
         <div class="form-group"><label>> Access Key</label><input name="password" type="password" required></div>
         <button type="submit" class="btn-green" style="width: 100%;">[ AUTHENTICATE ]</button>
-      </form></div>
+      </form>
+    </div>
     """ + MATRIX_JS)
 
 @app.route('/logout')
@@ -207,20 +414,31 @@ def logout():
 def dashboard():
     plans = LegacyPlan.query.filter_by(user_id=current_user.id).all()
     return render_template_string(BASE_TEMPLATE + """
-    <div class="card"><div style="display: flex; justify-content: space-between; margin-bottom: 2rem;"><h1>Dashboard</h1><a href="/create_plan" class="btn btn-green">[ + NEW_PLAN ]</a></div>
+    <div class="card">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <h1 style="margin: 0; border: none;">Ops Dashboard</h1>
+        <a href="/create_plan" class="btn btn-green">[ + NEW_PROTOCOL ]</a>
+      </div>
       {% if plans %}
         {% for plan in plans %}
           <div class="plan-row" style="flex-direction: column; align-items: flex-start;">
-            <div style="width: 100%; display: flex; justify-content: space-between;"><strong>[ PLAN_ID: {{ plan.id }} ]</strong><span class="badge badge-{{ plan.status }}">{{ plan.status.replace('_', ' ') }}</span></div>
-            <div style="margin-top: 1rem; width: 100%;">
+            <div style="width: 100%; display: flex; justify-content: space-between; align-items: center;">
+              <strong style="font-size: 1.2rem; color: var(--green); font-family: var(--tech); text-shadow: 0 0 5px var(--green);">[ PLAN_ID: {{ plan.id }} ]</strong>
+              <span class="badge badge-{{ plan.status }}">{{ plan.status.replace('_', ' ') }}</span>
+            </div>
+            <div style="margin-top: 1rem; width: 100%; padding-left: 1rem; border-left: 2px solid var(--border);">
               <span class="muted">PRIMARY E-MAIL: {{ plan.primary_email }}</span>
               <span class="muted">SECONDARY E-MAIL: {{ plan.secondary_email or 'NONE' }}</span>
               <span class="muted">THRESHOLD: {{ plan.inactivity_days }} days | LAST_CHECKIN: {{ plan.last_activity.strftime('%Y-%m-%d') }}</span>
             </div>
           </div>
         {% endfor %}
-        <div style="margin-top: 2rem;"><a href="/run_check" class="btn" style="width: 100%; text-align: center;">[ RUN DIAGNOSTIC ]</a></div>
-      {% else %}<p style="font-family: var(--mono);">> NO ACTIVE PROTOCOLS.</p>{% endif %}
+        <div style="margin-top: 2rem;">
+          <a href="/run_check" class="btn" style="width: 100%; text-align: center; border-color: var(--warn); color: var(--warn);">[ RUN SYSTEM DIAGNOSTIC ]</a>
+        </div>
+      {% else %}
+        <p style="font-family: var(--mono); text-align: center; padding: 2rem;">> NO ACTIVE PROTOCOLS DETECTED.</p>
+      {% endif %}
     </div>
     """ + MATRIX_JS, plans=plans)
 
@@ -232,10 +450,11 @@ def create_plan():
         plan_data = {"userName": current_user.name, "accounts": accounts, "createdAt": datetime.utcnow().isoformat()}
         db.session.add(LegacyPlan(user_id=current_user.id, encrypted_data=encrypt_plan(plan_data), primary_email=request.form['primary_email'].strip().lower(), secondary_email=request.form.get('secondary_email', '').strip().lower() or None, inactivity_days=int(request.form['inactivity_days']), last_activity=datetime.utcnow(), status="active"))
         db.session.commit()
-        flash('PROTOCOL SAVED.', 'success')
+        flash('PROTOCOL SAVED. DATA ENCRYPTED.', 'success')
         return redirect(url_for('dashboard'))
     return render_template_string(BASE_TEMPLATE + """
-    <div class="card"><h1>Initialize Protocol</h1>
+    <div class="card">
+      <h1>Initialize Protocol</h1>
       <form method="POST" style="margin-top: 2rem;">
         <h2>E-mail Escalation Path</h2>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
@@ -244,21 +463,23 @@ def create_plan():
         </div>
         <div class="form-group"><label>> Inactivity Threshold (Days)</label><input name="inactivity_days" type="number" value="180" required min="1"></div>
         <h2>Target Assets</h2>
-        <div id="accounts"><div class="account-block" style="background: rgba(0,0,0,0.5); padding: 1.5rem; border: 1px solid #30363d; margin-bottom: 1rem;">
-          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem;">
-            <div class="form-group" style="margin:0;"><label>> Platform</label><select name="platform[]"><option>WhatsApp</option><option>Discord</option><option>X</option><option>Threads</option><option>Instagram</option><option>Pinterest</option><option>LinkedIn</option></select></div>
-            <div class="form-group" style="margin:0;"><label>> Directive</label><select name="action[]"><option>Delete</option><option>Transfer to contact</option><option>Archive privately</option></select></div>
-            <div class="form-group" style="margin:0;"><label>> Filter (Optional)</label><input name="filter[]" placeholder="e.g., Specific Album / Chat"></div>
+        <div id="accounts">
+          <div class="account-block" style="background: rgba(0,0,0,0.5); padding: 1.5rem; border: 1px solid var(--border); margin-bottom: 1rem;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem;">
+              <div class="form-group" style="margin:0;"><label>> Platform</label><select name="platform[]"><option>WhatsApp</option><option>Discord</option><option>X</option><option>Threads</option><option>Instagram</option><option>Pinterest</option><option>LinkedIn</option></select></div>
+              <div class="form-group" style="margin:0;"><label>> Directive</label><select name="action[]"><option>Delete</option><option>Transfer to contact</option><option>Archive privately</option></select></div>
+              <div class="form-group" style="margin:0;"><label>> Filter (Optional)</label><input name="filter[]" placeholder="e.g., Specific Album / Chat"></div>
+            </div>
           </div>
-        </div></div>
-        <button type="button" onclick="addRow()" class="btn" style="margin-bottom: 2rem;">[ + ADD ]</button><br>
-        <button type="submit" class="btn-green" style="width: 100%; padding: 1rem;">[ EXECUTE ]</button>
+        </div>
+        <button type="button" onclick="addRow()" class="btn" style="margin-bottom: 2rem;">[ + ADD_TARGET ]</button><br>
+        <button type="submit" class="btn-green" style="width: 100%; padding: 1rem;">[ EXECUTE_SAVE ]</button>
       </form>
     </div>
     <script>
     function addRow() {
       const d = document.getElementById('accounts'); const r = document.createElement('div');
-      r.style = "background: rgba(0,0,0,0.5); padding: 1.5rem; border: 1px solid #30363d; margin-bottom: 1rem;";
+      r.style = "background: rgba(0,0,0,0.5); padding: 1.5rem; border: 1px solid var(--border); margin-bottom: 1rem;";
       r.innerHTML = `<div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem;"><div class="form-group" style="margin:0;"><label>> Platform</label><select name="platform[]"><option>WhatsApp</option><option>Discord</option><option>X</option><option>Threads</option><option>Instagram</option><option>Pinterest</option><option>LinkedIn</option></select></div><div class="form-group" style="margin:0;"><label>> Directive</label><select name="action[]"><option>Delete</option><option>Transfer to contact</option><option>Archive privately</option></select></div><div class="form-group" style="margin:0;"><label>> Filter</label><input name="filter[]" placeholder="e.g., Specific Album"></div></div>`;
       d.appendChild(r);
     }
@@ -287,19 +508,24 @@ def run_check():
             results.append({"plan_id": plan.id, "action": "ACTIVE", "days_left": plan.inactivity_days - days_inactive})
 
     return render_template_string(BASE_TEMPLATE + """
-    <div class="card"><h1>Diagnostic</h1>
-      {% if results %}{% for r in results %}
+    <div class="card">
+      <h1>System Diagnostic</h1>
+      {% if results %}
+        {% for r in results %}
           <div class="plan-row" style="flex-direction: column; align-items: flex-start;">
-            <strong>[ ID: {{ r.plan_id }} ] > {{ r.action }}</strong>
+            <strong style="color: var(--warn); font-family: var(--tech); font-size: 1.1rem;">> STATUS: {{ r.action }}</strong>
             {% if r.get('contact') %}
-              <div style="background: rgba(0,255,65,0.05); padding: 1rem; width: 100%; margin-top: 1rem; border: 1px solid var(--green);">
-                <p class="muted" style="color:#fff;">TARGET ({{ r.type }}): {{ r.contact }}</p>
-                <a href="/verify/{{ r.token }}" class="btn btn-green" style="width: 100%; text-align: center;">[ VERIFY & CONFIRM ]</a>
+              <div style="background: rgba(0,255,65,0.05); padding: 1.5rem; width: 100%; margin-top: 1rem; border: 1px solid var(--green); border-left: 4px solid var(--green);">
+                <p class="muted" style="color:var(--text); margin-bottom: 1rem;">[ TARGET {{ r.type }}: {{ r.contact }} ]</p>
+                <a href="/verify/{{ r.token }}" class="btn btn-green" style="width: 100%; text-align: center;">[ VERIFY & EXECUTE ]</a>
               </div>
             {% endif %}
           </div>
-      {% endfor %}{% else %}<p>NO PLANS.</p>{% endif %}
-      <a href="/dashboard" class="btn" style="margin-top: 2rem;">[ BACK ]</a>
+        {% endfor %}
+      {% else %}
+        <p style="font-family: var(--mono);">> NO ACTIVE PROTOCOLS DETECTED.</p>
+      {% endif %}
+      <a href="/dashboard" class="btn" style="margin-top: 2rem;">[ RETURN TO DASHBOARD ]</a>
     </div>
     """ + MATRIX_JS, results=results)
 
@@ -330,7 +556,7 @@ def verify_documents(token):
 
     return render_template_string(BASE_TEMPLATE + """
     <div class="card" style="max-width: 600px; margin: 0 auto;">
-      <h1>2FA Verification</h1>
+      <h1 style="color: var(--warn);">2FA Document Verification</h1>
       <p style="font-family: var(--mono); color: var(--warn);">> ACTION REQUIRED: UPLOAD ID & DEATH CERTIFICATE TO PROCEED.</p>
       <form method="POST" enctype="multipart/form-data" style="margin-top: 2rem;">
         <div class="form-group">
@@ -349,27 +575,4 @@ def verify_documents(token):
 
 @app.route('/execute/<token>')
 def execute_plan(token):
-    plan = LegacyPlan.query.filter_by(confirmation_token=token).first()
-    if not plan: return "Invalid token", 404
-    if plan.status in ("confirmed", "executed"): return "Already executed", 400
-
-    plan.status = "executed"
-    plan.verification_status = "approved"
-    db.session.commit()
-    
-    data = decrypt_plan(plan.encrypted_data)
-    rc = plan.primary_email if plan.contact_attempted == 'primary' else plan.secondary_email
-    rep = f"EXECUTION REPORT\nUser: {data.get('userName')}\nContact: {rc}\nStatus: COMPLETE\nVerification: ID + Death Certificate Approved\n\nACTIONS:\n"
-    for i, a in enumerate(data.get('accounts', []), 1):
-        rep += f"{i}. {a['platform']} - {a['action']} ({a.get('filter','')})\n"
-    
-    return render_template_string(BASE_TEMPLATE + """
-    <div class="card">
-      <h1 style="color:var(--green);">Verified & Confirmed</h1>
-      <p>Documents validated. Plan executed.</p>
-      <pre>{{ report }}</pre>
-    </div>
-    """ + MATRIX_JS, report=rep)
-
-with app.app_context(): db.create_all()
-if __name__ == "__main__": app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
+    plan
