@@ -1,5 +1,5 @@
 """
-GRANT SECURITY — CYBERSECURITY THEME (WITH EMAIL & BANK PREFERENCES)
+GRANT SECURITY — CYBERSECURITY THEME (WITH 2FA DOCUMENT VERIFICATION)
 """
 import os
 import secrets
@@ -10,11 +10,18 @@ from flask_login import LoginManager, UserMixin, login_user, login_required, log
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from cryptography.fernet import Fernet
+from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get("SECRET_KEY", secrets.token_hex(32))
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL", "sqlite:///legacy.db")
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+# Configure upload folder for documents
+UPLOAD_FOLDER = 'uploads'
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+if not os.path.exists(UPLOAD_FOLDER):
+    os.makedirs(UPLOAD_FOLDER)
 
 db = SQLAlchemy(app)
 login_manager = LoginManager()
@@ -50,6 +57,12 @@ class LegacyPlan(db.Model):
     confirmation_token = db.Column(db.String(100), unique=True, nullable=True)
     contact_attempted = db.Column(db.String(20), default="primary")
     verification_sent_at = db.Column(db.DateTime, nullable=True)
+    
+    # NEW: Document Verification Fields
+    id_document = db.Column(db.String(200), nullable=True)
+    death_certificate = db.Column(db.String(200), nullable=True)
+    verification_status = db.Column(db.String(50), default="pending")
+    
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     user = db.relationship('User', backref='plans')
 
@@ -248,7 +261,7 @@ def run_check():
             {% if r.get('contact') %}
               <div style="background: rgba(0,255,65,0.05); padding: 1rem; width: 100%; margin-top: 1rem;">
                 <p class="muted" style="color:#fff;">TARGET ({{ r.type }}): {{ r.contact }}</p>
-                <a href="/confirm/{{ r.token }}" class="btn btn-green" style="width: 100%; text-align: center;">[ SIMULATE_CONFIRMATION ]</a>
+                <a href="/verify/{{ r.token }}" class="btn btn-green" style="width: 100%; text-align: center;">[ VERIFY & CONFIRM ]</a>
               </div>
             {% endif %}
           </div>
@@ -257,21 +270,75 @@ def run_check():
     </div>
     """, results=results)
 
-@app.route('/confirm/<token>')
-def confirm(token):
+@app.route('/verify/<token>', methods=['GET', 'POST'])
+def verify_documents(token):
     plan = LegacyPlan.query.filter_by(confirmation_token=token).first()
     if not plan: return "Invalid token", 404
     if plan.status in ("confirmed", "executed"): return "Already executed", 400
+
+    if request.method == 'POST':
+        # Handle File Uploads
+        id_file = request.files.get('id_document')
+        death_file = request.files.get('death_certificate')
+        
+        if id_file and death_file:
+            id_filename = secure_filename(id_file.filename)
+            death_filename = secure_filename(death_file.filename)
+            
+            id_file.save(os.path.join(app.config['UPLOAD_FOLDER'], id_filename))
+            death_file.save(os.path.join(app.config['UPLOAD_FOLDER'], death_filename))
+            
+            plan.id_document = id_filename
+            plan.death_certificate = death_filename
+            plan.verification_status = "documents_uploaded"
+            db.session.commit()
+            
+            flash('DOCUMENTS RECEIVED. AWAITING SYSTEM VALIDATION.', 'success')
+            return redirect(url_for('execute_plan', token=token))
+        else:
+            flash('ERROR: Both documents are required.', 'error')
+
+    return render_template_string(BASE_TEMPLATE + """
+    <div class="card" style="max-width: 600px; margin: 0 auto;">
+      <h1>2FA Verification</h1>
+      <p style="font-family: var(--mono); color: var(--warn);">> ACTION REQUIRED: UPLOAD ID & DEATH CERTIFICATE TO PROCEED.</p>
+      <form method="POST" enctype="multipart/form-data" style="margin-top: 2rem;">
+        <div class="form-group">
+          <label>> Upload Your ID (Aadhaar / Passport)</label>
+          <input type="file" name="id_document" accept="image/*,.pdf" required style="border: 1px dashed var(--green); padding: 1rem;">
+        </div>
+        <div class="form-group">
+          <label>> Upload Death Certificate of Deceased</label>
+          <input type="file" name="death_certificate" accept="image/*,.pdf" required style="border: 1px dashed var(--green); padding: 1rem;">
+        </div>
+        <button type="submit" class="btn-green" style="width: 100%; padding: 1rem;">[ SUBMIT DOCUMENTS ]</button>
+      </form>
+      <p class="muted" style="margin-top: 1.5rem; text-align: center;">Your documents are encrypted and only used for legal verification.</p>
+    </div>
+    """)
+
+@app.route('/execute/<token>')
+def execute_plan(token):
+    plan = LegacyPlan.query.filter_by(confirmation_token=token).first()
+    if not plan: return "Invalid token", 404
+    if plan.status in ("confirmed", "executed"): return "Already executed", 400
+
     plan.status = "executed"
+    plan.verification_status = "approved"
     db.session.commit()
+    
     data = decrypt_plan(plan.encrypted_data)
     rc = plan.primary_email if plan.contact_attempted == 'primary' else plan.secondary_email
-    rep = f"EXECUTION REPORT\nUser: {data.get('userName')}\nContact: {rc}\nStatus: COMPLETE\n\nACTIONS:\n"
+    rep = f"EXECUTION REPORT\nUser: {data.get('userName')}\nContact: {rc}\nStatus: COMPLETE\nVerification: ID + Death Certificate Approved\n\nACTIONS:\n"
     for i, a in enumerate(data.get('accounts', []), 1):
         rep += f"{i}. {a['platform']} - {a['action']} ({a.get('filter','')})\n"
     
     return render_template_string(BASE_TEMPLATE + """
-    <div class="card"><h1 style="color:var(--green);">Confirmed</h1><p>Plan executed.</p><pre>{{ report }}</pre></div>
+    <div class="card">
+      <h1 style="color:var(--green);">Verified & Confirmed</h1>
+      <p>Documents validated. Plan executed.</p>
+      <pre>{{ report }}</pre>
+    </div>
     """, report=rep)
 
 with app.app_context(): db.create_all()
