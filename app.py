@@ -2,13 +2,13 @@
 MARVEL PROTOCOL: DIGITAL LEGACY DIRECTIVE
 ============================================================
 Autonomous Post-Mortem Asset Protection & Succession Protocol
-Theme: Marvel / Stark Industries / S.H.I.E.L.D. Level 7 Clearance
+Theme: Marvel / Grant Industries / S.H.I.E.L.D. Level 7 Clearance
 Features:
 - Upgraded Live Marvel Animated Canvas Background:
-  * Luminous Stark Arc Reactor Core with Triangular Plasma Core & Rotating Rings
-  * Interactive Doctor Strange Eldritch Mandala & Sling-Ring Sparks on Cursor
-  * Click-triggered Repulsor / Infinity Shockwave Pulse
-  * 6 Infinity Stone Energy Nodes + Quantum Nebula + S.H.I.E.L.D. Radar Sweep
+  - Luminous Grant Arc Reactor Core with Triangular Plasma Core & Rotating Rings
+  - Interactive Doctor Strange Eldritch Mandala & Sling-Ring Sparks on Cursor
+  - Click-triggered Repulsor / Infinity Shockwave Pulse
+  - 6 Infinity Stone Energy Nodes + Quantum Nebula + S.H.I.E.L.D. Radar Sweep
 - Complete User Auth & Encrypted Estate Planning
 - Multi-tier Escalation & 2FA Document Verification
 ============================================================
@@ -79,6 +79,7 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get("SECRET_KEY", secrets.token_hex(32))
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL", "sqlite:///legacy.db")
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16 MB upload cap
 
 UPLOAD_FOLDER = 'uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -141,6 +142,13 @@ def encrypt_plan(data: dict) -> str:
 def decrypt_plan(encrypted: str) -> dict:
     return json.loads(fernet.decrypt(encrypted.encode()).decode())
 
+def save_uploaded_file(file_storage, prefix: str) -> str:
+    filename = secure_filename(file_storage.filename)
+    unique_name = f"{prefix}_{secrets.token_hex(8)}_{filename}"
+    filepath = os.path.join(app.config['UPLOAD_FOLDER'], unique_name)
+    file_storage.save(filepath)
+    return unique_name
+
 # ============================================================
 # MARVEL BASE TEMPLATE (HIGH-TECH HUD & CINEMATIC STYLING)
 # ============================================================
@@ -151,7 +159,7 @@ BASE_TEMPLATE = """
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MARVEL PROTOCOL // STARK SECURE OS</title>
+  <title>MARVEL PROTOCOL // GRANT SECURE OS</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -207,7 +215,7 @@ BASE_TEMPLATE = """
       left: 0;
       width: 100vw;
       height: 100vh;
-      background: 
+      background:
         linear-gradient(rgba(0, 240, 255, 0.025) 1px, transparent 1px),
         linear-gradient(90deg, rgba(0, 240, 255, 0.025) 1px, transparent 1px);
       background-size: 60px 60px;
@@ -449,7 +457,7 @@ BASE_TEMPLATE = """
       text-transform: uppercase;
     }
 
-    input, select {
+    input, select, textarea {
       width: 100%;
       padding: 0.85rem 1rem;
       border: 1px solid rgba(255, 255, 255, 0.15);
@@ -461,7 +469,7 @@ BASE_TEMPLATE = """
       transition: all 0.3s ease;
     }
 
-    input:focus, select:focus {
+    input:focus, select:focus, textarea:focus {
       outline: none;
       border-color: var(--marvel-red);
       box-shadow: 0 0 15px var(--marvel-red-glow);
@@ -493,6 +501,13 @@ BASE_TEMPLATE = """
       border-color: var(--marvel-red);
       box-shadow: 0 0 20px var(--marvel-red-glow);
       color: #ffffff;
+    }
+
+    .btn-sm {
+      padding: 0.5rem 1rem;
+      font-size: 0.88rem;
+      letter-spacing: 1.2px;
+      margin-top: 0;
     }
 
     .btn-red {
@@ -566,6 +581,8 @@ BASE_TEMPLATE = """
       display: flex;
       justify-content: space-between;
       align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
       padding: 1.4rem;
       background: rgba(10, 14, 24, 0.75);
       border: 1px solid var(--border);
@@ -580,6 +597,13 @@ BASE_TEMPLATE = """
       border-color: var(--marvel-red);
       box-shadow: 0 4px 20px rgba(230, 36, 41, 0.2);
       transform: translateY(-2px);
+    }
+
+    .plan-actions {
+      display: flex;
+      gap: 0.6rem;
+      align-items: center;
+      flex-wrap: wrap;
     }
 
     .badge {
@@ -640,6 +664,7 @@ BASE_TEMPLATE = """
       border-radius: 6px;
       text-align: center;
       flex: 1;
+      min-width: 170px;
     }
 
     .hero-stat-val {
@@ -656,6 +681,18 @@ BASE_TEMPLATE = """
       letter-spacing: 1.5px;
       text-transform: uppercase;
     }
+
+    .token-box {
+      background: rgba(0, 240, 255, 0.07);
+      border: 1px dashed var(--border-cyan);
+      padding: 0.9rem 1.1rem;
+      border-radius: 6px;
+      font-family: var(--font-tech);
+      font-size: 0.95rem;
+      color: var(--arc-blue);
+      word-break: break-all;
+      margin-top: 0.6rem;
+    }
   </style>
 </head>
 <body>
@@ -668,7 +705,7 @@ BASE_TEMPLATE = """
   <nav>
     <a href="/" class="brand-wrap">
       <span class="marvel-badge">MARVEL</span>
-      <span class="brand-title">STARK SECURE OS</span>
+      <span class="brand-title">GRANT SECURE OS</span>
       <span class="shield-badge">LEVEL 7</span>
     </a>
     <div class="nav-links">
@@ -703,7 +740,7 @@ BASE_TEMPLATE = """
 MARVEL_LIVE_JS = """
   <!-- S.H.I.E.L.D. Bottom Telemetry HUD -->
   <div class="hud-footer">
-    <div><span class="hud-pulse-dot"></span>J.A.R.V.I.S. // QUANTUM ENCRYPTION CORE ONLINE</div>
+    <div><span class="hud-pulse-dot"></span>GRANT AI // QUANTUM ENCRYPTION CORE ONLINE</div>
     <div id="hud-coords">SECTOR 7G // ARC OUTPUT: 3.2 GJ/S</div>
   </div>
 
@@ -727,12 +764,12 @@ MARVEL_LIVE_JS = """
 
   // Infinity Stone Palette (Space, Reality, Power, Mind, Time, Soul)
   const infinityStones = [
-    { name: "REALITY", r: 230, g: 36,  b: 41  }, // Red
-    { name: "SPACE",   r: 0,   g: 240, b: 255 }, // Blue
-    { name: "MIND",    r: 255, g: 215, b: 0   }, // Yellow
-    { name: "POWER",   r: 175, g: 82,  b: 255 }, // Purple
-    { name: "TIME",    r: 16,  g: 225, b: 135 }, // Green
-    { name: "SOUL",    r: 255, g: 125, b: 15  }  // Orange
+    { name: "REALITY", r: 230, g: 36,  b: 41  },
+    { name: "SPACE",   r: 0,   g: 240, b: 255 },
+    { name: "MIND",    r: 255, g: 215, b: 0   },
+    { name: "POWER",   r: 175, g: 82,  b: 255 },
+    { name: "TIME",    r: 16,  g: 225, b: 135 },
+    { name: "SOUL",    r: 255, g: 125, b: 15  }
   ];
 
   // 1. Cosmic Infinity Energy Particles
@@ -766,7 +803,6 @@ MARVEL_LIVE_JS = """
       hudCoords.textContent = `TARGET LOCK: [${Math.round(e.clientX)}, ${Math.round(e.clientY)}] // ARC OUTPUT: 3.2 GJ/S`;
     }
 
-    // Spawn Eldritch Sling-Ring Sparks
     for (let i = 0; i < 3; i++) {
       const angle = Math.random() * Math.PI * 2;
       const speed = Math.random() * 2.2 + 0.6;
@@ -799,23 +835,19 @@ MARVEL_LIVE_JS = """
   let angle = 0;
   let pulseTime = 0;
 
-  // Draw Cosmic Nebula Glows
   function drawCosmicNebula() {
-    // Red Reality Nebula (Top-Left)
     const g1 = ctx.createRadialGradient(w * 0.18, h * 0.22, 10, w * 0.18, h * 0.22, w * 0.42);
     g1.addColorStop(0, 'rgba(230, 36, 41, 0.16)');
     g1.addColorStop(1, 'rgba(5, 6, 10, 0)');
     ctx.fillStyle = g1;
     ctx.fillRect(0, 0, w, h);
 
-    // Space Tesseract Cyan Glow (Center)
     const g2 = ctx.createRadialGradient(w * 0.5, h * 0.48, 15, w * 0.5, h * 0.48, w * 0.45);
     g2.addColorStop(0, 'rgba(0, 240, 255, 0.14)');
     g2.addColorStop(1, 'rgba(5, 6, 10, 0)');
     ctx.fillStyle = g2;
     ctx.fillRect(0, 0, w, h);
 
-    // Power Stone Purple Nebula (Bottom-Right)
     const g3 = ctx.createRadialGradient(w * 0.85, h * 0.8, 10, w * 0.85, h * 0.8, w * 0.4);
     g3.addColorStop(0, 'rgba(157, 78, 221, 0.14)');
     g3.addColorStop(1, 'rgba(5, 6, 10, 0)');
@@ -823,9 +855,7 @@ MARVEL_LIVE_JS = """
     ctx.fillRect(0, 0, w, h);
   }
 
-  // Draw Luminous Stark Arc Reactor Core & Avengers Emblem
-  function drawStarkArcReactor() {
-    // Subtle parallax shift toward cursor
+  function drawGrantArcReactor() {
     const px = (mouse.x - w * 0.5) * 0.025;
     const py = (mouse.y - h * 0.5) * 0.025;
     const cx = w * 0.5 + px;
@@ -839,7 +869,6 @@ MARVEL_LIVE_JS = """
     ctx.save();
     ctx.translate(cx, cy);
 
-    // 1. Core Plasma Backlight
     const coreGlow = ctx.createRadialGradient(0, 0, baseR * 0.05, 0, 0, baseR * 1.15);
     coreGlow.addColorStop(0, 'rgba(0, 240, 255, 0.24)');
     coreGlow.addColorStop(0.45, 'rgba(0, 160, 255, 0.08)');
@@ -849,7 +878,6 @@ MARVEL_LIVE_JS = """
     ctx.arc(0, 0, baseR * 1.15, 0, Math.PI * 2);
     ctx.fill();
 
-    // 2. S.H.I.E.L.D. Rotating Radar Sweep
     ctx.save();
     ctx.rotate(angle * 2.2);
     const sweepGrad = ctx.createLinearGradient(0, 0, baseR, 0);
@@ -863,14 +891,12 @@ MARVEL_LIVE_JS = """
     ctx.fill();
     ctx.restore();
 
-    // 3. Outer Marvel Red Armor Ring
     ctx.strokeStyle = 'rgba(230, 36, 41, 0.26)';
     ctx.lineWidth = 2.5;
     ctx.beginPath();
     ctx.arc(0, 0, baseR + breathe, 0, Math.PI * 2);
     ctx.stroke();
 
-    // 4. Segmented Cyan Arc Reactor Ring + 12 Copper/Plasma Coils
     ctx.save();
     ctx.rotate(angle);
     ctx.strokeStyle = 'rgba(0, 240, 255, 0.24)';
@@ -895,7 +921,6 @@ MARVEL_LIVE_JS = """
     }
     ctx.restore();
 
-    // 5. Counter-Rotating Gold Vibranium Ring
     ctx.save();
     ctx.rotate(-angle * 1.5);
     ctx.strokeStyle = 'rgba(255, 215, 0, 0.22)';
@@ -906,14 +931,12 @@ MARVEL_LIVE_JS = """
     ctx.stroke();
     ctx.restore();
 
-    // 6. Mark VI Triangular Plasma Core
     const triR = baseR * 0.44 + breathe * 0.4;
     ctx.strokeStyle = 'rgba(0, 240, 255, 0.38)';
     ctx.fillStyle = 'rgba(0, 240, 255, 0.06)';
     ctx.lineWidth = 3;
     ctx.beginPath();
     for (let k = 0; k < 3; k++) {
-      // Inverted triangle like Iron Man's chest reactor
       const ta = Math.PI / 2 + (k * 2 * Math.PI) / 3;
       const tx = Math.cos(ta) * triR;
       const ty = Math.sin(ta) * triR;
@@ -924,7 +947,6 @@ MARVEL_LIVE_JS = """
     ctx.fill();
     ctx.stroke();
 
-    // 7. Central Avengers 'A' Hologram Emblem
     ctx.font = "900 " + Math.floor(baseR * 0.56) + "px 'Bebas Neue', sans-serif";
     ctx.fillStyle = "rgba(230, 36, 41, 0.14)";
     ctx.strokeStyle = "rgba(255, 215, 0, 0.18)";
@@ -937,13 +959,11 @@ MARVEL_LIVE_JS = """
     ctx.restore();
   }
 
-  // Draw Doctor Strange Rotating Eldritch Mandala around Cursor
   function drawEldritchCursor() {
     if (!mouse.active) return;
     ctx.save();
     ctx.translate(mouse.x, mouse.y);
 
-    // Outer rotating rune circle
     ctx.save();
     ctx.rotate(angle * 4);
     ctx.strokeStyle = 'rgba(255, 195, 25, 0.35)';
@@ -953,7 +973,6 @@ MARVEL_LIVE_JS = """
     ctx.arc(0, 0, 32, 0, Math.PI * 2);
     ctx.stroke();
 
-    // Intersecting Mystic Squares
     ctx.setLineDash([]);
     ctx.strokeStyle = 'rgba(255, 130, 20, 0.25)';
     ctx.strokeRect(-18, -18, 36, 36);
@@ -964,17 +983,12 @@ MARVEL_LIVE_JS = """
     ctx.restore();
   }
 
-  // Main 60FPS Render Loop
   function render() {
     ctx.clearRect(0, 0, w, h);
 
-    // Layer 1: Cosmic Nebula
     drawCosmicNebula();
+    drawGrantArcReactor();
 
-    // Layer 2: Stark Arc Reactor & Avengers Hologram
-    drawStarkArcReactor();
-
-    // Layer 3: Quantum Energy Filaments between Infinity Particles
     for (let i = 0; i < particles.length; i++) {
       for (let j = i + 1; j < particles.length; j++) {
         const dx = particles[i].x - particles[j].x;
@@ -993,7 +1007,6 @@ MARVEL_LIVE_JS = """
       }
     }
 
-    // Layer 4: Glowing Infinity Stone Particles
     for (let i = 0; i < particles.length; i++) {
       const p = particles[i];
       p.x += p.vx;
@@ -1006,20 +1019,17 @@ MARVEL_LIVE_JS = """
       p.pulse += p.pulseSpeed;
       const currentAlpha = Math.max(0.2, p.alpha + Math.sin(p.pulse) * 0.25);
 
-      // Outer stone aura
       ctx.fillStyle = `rgba(${p.stone.r}, ${p.stone.g}, ${p.stone.b}, ${currentAlpha * 0.25})`;
       ctx.beginPath();
       ctx.arc(p.x, p.y, p.r * 3, 0, Math.PI * 2);
       ctx.fill();
 
-      // Bright stone core
       ctx.fillStyle = `rgba(${p.stone.r}, ${p.stone.g}, ${p.stone.b}, ${currentAlpha})`;
       ctx.beginPath();
       ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
       ctx.fill();
     }
 
-    // Layer 5: Click Shockwaves
     for (let i = shockwaves.length - 1; i >= 0; i--) {
       const sw = shockwaves[i];
       sw.radius += 7;
@@ -1035,7 +1045,6 @@ MARVEL_LIVE_JS = """
       ctx.stroke();
     }
 
-    // Layer 6: Doctor Strange Eldritch Mandala & Sparks
     drawEldritchCursor();
 
     for (let i = sparks.length - 1; i >= 0; i--) {
@@ -1071,114 +1080,114 @@ MARVEL_LIVE_JS = """
 @app.route('/')
 def index():
     return render_template_string(BASE_TEMPLATE + """
-    <div class="card" style="text-align: center; padding: 4rem 2.5rem;">
-      <div class="corner-tag">STARK IND // DIRECTIVE 838</div>
-      <h1>STARK INDUSTRIES <span class="accent">LEGACY DIRECTIVE</span></h1>
-      <p style="font-family: var(--font-tech); font-size: 1.25rem; color: var(--gold); letter-spacing: 1.5px; text-transform: uppercase;">
-        // S.H.I.E.L.D. LEVEL 7 AUTONOMOUS ASSET SUCCESSION PROTOCOL
+    <div class="card" style="text-align: center; padding: 3rem 2.5rem;">
+      <span class="corner-tag">GRANT INDUSTRIES // PROTOCOL 07</span>
+      <h1>DIGITAL LEGACY <span class="accent">DIRECTIVE</span></h1>
+      <p style="max-width: 680px; margin: 0 auto 2rem; color: #cbd5e1;">
+        Autonomous post-mortem asset protection and succession vaults secured with authenticated encryption,
+        multi-tier escalation, and two-factor document verification.
       </p>
-      <p style="max-width: 720px; margin: 1.5rem auto 2rem; color: var(--text); line-height: 1.8;">
-        When the hero falls, their legacy must endure. Protect your digital empire, confidential archives, and credentials with military-grade AES encryption. In the event of confirmed inactive status, your designated emergency contacts receive encrypted directives following strict S.H.I.E.L.D. legal verification.
-      </p>
-
-      <div style="display: flex; gap: 1.5rem; justify-content: center; max-width: 650px; margin: 0 auto 2.5rem; flex-wrap: wrap;">
+      <div style="display: flex; gap: 1rem; justify-content: center; margin-bottom: 2.2rem; flex-wrap: wrap;">
         <div class="hero-stat">
-          <div class="hero-stat-val">256-BIT</div>
-          <div class="hero-stat-lbl">Quantum Fernet Encryption</div>
+          <div class="hero-stat-val">FERNET</div>
+          <div class="hero-stat-lbl">Authenticated Vault</div>
         </div>
         <div class="hero-stat">
           <div class="hero-stat-val">2-TIER</div>
-          <div class="hero-stat-lbl">Contact Escalation</div>
+          <div class="hero-stat-lbl">Escalation Chain</div>
         </div>
         <div class="hero-stat">
-          <div class="hero-stat-val">2FA</div>
-          <div class="hero-stat-lbl">Legal Document Verification</div>
+          <div class="hero-stat-val">2FA DOCS</div>
+          <div class="hero-stat-lbl">Verification Gate</div>
         </div>
       </div>
-
-      <div style="display: flex; justify-content: center; gap: 1.2rem; flex-wrap: wrap;">
-        {% if not current_user.is_authenticated %}
-          <a href="/signup" class="btn btn-red" style="padding: 1rem 2.4rem;">[ INITIATE CLEARANCE ]</a>
-          <a href="/login" class="btn btn-gold" style="padding: 1rem 2.4rem;">[ AGENT LOGIN ]</a>
-        {% else %}
-          <a href="/create_plan" class="btn btn-red" style="padding: 1rem 2.4rem;">[ + NEW DIRECTIVE ]</a>
-          <a href="/dashboard" class="btn btn-gold" style="padding: 1rem 2.4rem;">[ COMMAND DASHBOARD ]</a>
-        {% endif %}
-      </div>
+      {% if current_user.is_authenticated %}
+        <a href="/dashboard" class="btn btn-red">Open Command Dashboard</a>
+        <a href="/create_plan" class="btn btn-gold">Create New Directive</a>
+      {% else %}
+        <a href="/signup" class="btn btn-red">Request Clearance</a>
+        <a href="/login" class="btn btn-cyan">Operator Login</a>
+      {% endif %}
     </div>
     """ + MARVEL_LIVE_JS)
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
+    if current_user.is_authenticated:
+        return redirect(url_for('dashboard'))
     if request.method == 'POST':
-        email = request.form['email'].strip().lower()
-        name = request.form['name'].strip()
-        password = request.form['password']
-
-        if User.query.filter_by(email=email).first():
-            flash('SECURITY ALERT: Agent email already registered in S.H.I.E.L.D. database.', 'error')
+        name = request.form.get('name', '').strip()
+        email = request.form.get('email', '').strip().lower()
+        password = request.form.get('password', '')
+        if not name or not email or not password:
+            flash("All clearance fields are required.", "error")
             return redirect(url_for('signup'))
-
-        db.session.add(User(email=email, name=name, password_hash=generate_password_hash(password)))
+        if User.query.filter_by(email=email).first():
+            flash("An operator with that email already exists.", "error")
+            return redirect(url_for('signup'))
+        user = User(
+            name=name,
+            email=email,
+            password_hash=generate_password_hash(password)
+        )
+        db.session.add(user)
         db.session.commit()
-        flash('CLEARANCE GRANTED: Agent account initialized successfully.', 'success')
-        return redirect(url_for('login'))
+        login_user(user)
+        flash(f"Level 7 clearance granted for {user.name}. Welcome to Grant Secure OS.", "success")
+        return redirect(url_for('dashboard'))
 
     return render_template_string(BASE_TEMPLATE + """
     <div class="card" style="max-width: 540px; margin: 0 auto;">
-      <div class="corner-tag">REGISTRATION // FORM 104</div>
-      <h1>AGENT <span class="accent">CLEARANCE</span></h1>
-      <p style="color: var(--muted); font-size: 0.92rem;">Register your cryptographic credentials into the Stark Legacy Network.</p>
-      <form method="POST" style="margin-top: 1.8rem;">
+      <span class="corner-tag">GRANT INDUSTRIES // NEW OPERATOR</span>
+      <h1>CLEARANCE <span class="accent">SIGN UP</span></h1>
+      <form method="POST">
         <div class="form-group">
-          <label>Agent Codename / Full Name</label>
-          <input name="name" required placeholder="e.g., Tony Stark">
+          <label for="name">Operator Full Name</label>
+          <input type="text" id="name" name="name" required placeholder="e.g. Elena Grant">
         </div>
         <div class="form-group">
-          <label>Secure Comms Email</label>
-          <input name="email" type="email" required placeholder="agent@starkindustries.com">
+          <label for="email">Command Email</label>
+          <input type="email" id="email" name="email" required placeholder="operator@grantindustries.io">
         </div>
         <div class="form-group">
-          <label>Biometric Passcode / Password (Min 6 chars)</label>
-          <input name="password" type="password" required minlength="6" placeholder="••••••••••••">
+          <label for="password">Access Passphrase</label>
+          <input type="password" id="password" name="password" required>
         </div>
-        <button type="submit" class="btn btn-red" style="width: 100%; padding: 1rem; margin-top: 1rem;">
-          [ INITIALIZE AGENT CLEARANCE ]
-        </button>
+        <button type="submit" class="btn btn-red" style="width: 100%;">Authorize & Register</button>
       </form>
-      <p class="muted" style="margin-top: 1.5rem; text-align: center;">Already have active clearance? <a href="/login" style="color: var(--gold);">Login here</a></p>
     </div>
     """ + MARVEL_LIVE_JS)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    if current_user.is_authenticated:
+        return redirect(url_for('dashboard'))
     if request.method == 'POST':
-        user = User.query.filter_by(email=request.form['email'].strip().lower()).first()
-        if user and check_password_hash(user.password_hash, request.form['password']):
+        email = request.form.get('email', '').strip().lower()
+        password = request.form.get('password', '')
+        user = User.query.filter_by(email=email).first()
+        if user and check_password_hash(user.password_hash, password):
             login_user(user)
-            flash(f'AUTHENTICATION VERIFIED: Welcome back, Agent {user.name}.', 'success')
+            flash(f"Identity verified. Welcome back, {user.name}.", "success")
             return redirect(url_for('dashboard'))
-        flash('SECURITY ALERT: Invalid credentials or unauthorized clearance.', 'error')
+        flash("Invalid credentials. Access denied.", "error")
+        return redirect(url_for('login'))
 
     return render_template_string(BASE_TEMPLATE + """
     <div class="card" style="max-width: 540px; margin: 0 auto;">
-      <div class="corner-tag">S.H.I.E.L.D. AUTH // GATEWAY</div>
-      <h1>AGENT <span class="accent">LOGIN</span></h1>
-      <p style="color: var(--muted); font-size: 0.92rem;">Authenticate to access your encrypted estate directives.</p>
-      <form method="POST" style="margin-top: 1.8rem;">
+      <span class="corner-tag">GRANT INDUSTRIES // AUTH GATE</span>
+      <h1>OPERATOR <span class="accent">LOGIN</span></h1>
+      <form method="POST">
         <div class="form-group">
-          <label>Comms Email Address</label>
-          <input name="email" type="email" required placeholder="agent@starkindustries.com">
+          <label for="email">Command Email</label>
+          <input type="email" id="email" name="email" required>
         </div>
         <div class="form-group">
-          <label>Biometric Passcode</label>
-          <input name="password" type="password" required placeholder="••••••••••••">
+          <label for="password">Access Passphrase</label>
+          <input type="password" id="password" name="password" required>
         </div>
-        <button type="submit" class="btn btn-red" style="width: 100%; padding: 1rem; margin-top: 1rem;">
-          [ VERIFY & ENTER ]
-        </button>
+        <button type="submit" class="btn btn-red" style="width: 100%;">Engage Protocol</button>
       </form>
-      <p class="muted" style="margin-top: 1.5rem; text-align: center;">New to the protocol? <a href="/signup" style="color: var(--gold);">Request Clearance</a></p>
     </div>
     """ + MARVEL_LIVE_JS)
 
@@ -1186,434 +1195,270 @@ def login():
 @login_required
 def logout():
     logout_user()
-    flash('CLEARANCE SUSPENDED: Secure session closed.', 'success')
+    flash("Session terminated. Vault locks engaged.", "success")
     return redirect(url_for('index'))
 
 @app.route('/dashboard')
 @login_required
 def dashboard():
-    plans = LegacyPlan.query.filter_by(user_id=current_user.id).all()
+    plans = LegacyPlan.query.filter_by(user_id=current_user.id).order_by(LegacyPlan.created_at.desc()).all()
+    now = datetime.utcnow()
+    overdue_plans = []
+    for p in plans:
+        deadline = p.last_activity + timedelta(days=p.inactivity_days)
+        if p.status == "active" and now >= deadline:
+            overdue_plans.append(p)
+
     return render_template_string(BASE_TEMPLATE + """
     <div class="card">
-      <div class="corner-tag">HQ OVERVIEW</div>
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
-        <div>
-          <h1>COMMAND <span class="accent">DASHBOARD</span></h1>
-          <p style="color: var(--gold); font-family: var(--font-tech); font-size: 1.1rem; letter-spacing: 1px; margin: 0;">
-            ACTIVE AGENT: {{ current_user.name | upper }} // ENCRYPTION KEY ONLINE
-          </p>
+      <span class="corner-tag">OPERATOR: {{ current_user.name }}</span>
+      <h1>LEGACY <span class="accent">COMMAND</span></h1>
+      <p>Monitor active directives, send life-sign heartbeats, or trigger/review succession escalation.</p>
+
+      {% if overdue_plans %}
+        <div class="flash error">
+          <span>⚠️</span>
+          <span>{{ overdue_plans|length }} directive(s) have exceeded their inactivity window and are eligible for escalation.</span>
         </div>
-        <a href="/create_plan" class="btn btn-red">[ + NEW DIRECTIVE ]</a>
+      {% endif %}
+
+      <div style="margin-bottom: 1.5rem;">
+        <a href="/create_plan" class="btn btn-gold">+ New Legacy Directive</a>
       </div>
 
+      <h2>Active & Escalated Directives</h2>
       {% if plans %}
         {% for plan in plans %}
-          <div class="plan-row" style="flex-direction: column; align-items: flex-start;">
-            <div style="width: 100%; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
-              <strong style="font-size: 1.2rem; color: #ffffff;">[ DIRECTIVE #{{ plan.id }} ]</strong>
-              <span class="badge badge-{{ plan.status }}">{{ plan.status.replace('_', ' ') }}</span>
+          <div class="plan-row">
+            <div>
+              <strong style="font-size: 1.15rem; color: #ffffff;">DIRECTIVE #{{ plan.id }}</strong>
+              <span class="badge badge-{{ plan.status }}" style="margin-left: 8px;">{{ plan.status }}</span>
+              <span class="muted">
+                Primary: {{ plan.primary_email }}
+                {% if plan.secondary_email %} | Secondary: {{ plan.secondary_email }}{% endif %}
+                | Window: {{ plan.inactivity_days }}d
+                | Last Heartbeat: {{ plan.last_activity.strftime('%Y-%m-%d %H:%M UTC') }}
+              </span>
+              {% if plan.confirmation_token and plan.status == 'pending_verification' %}
+                <div class="token-box">
+                  Escalation Target: <strong>{{ plan.contact_attempted|upper }}</strong> |
+                  Verification Link: <a href="{{ url_for('verify_escalation', token=plan.confirmation_token, _external=True) }}" style="color: var(--gold);">{{ url_for('verify_escalation', token=plan.confirmation_token, _external=True) }}</a>
+                </div>
+              {% endif %}
             </div>
-            <div style="margin-top: 1rem; width: 100%; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0.8rem;">
-              <span class="muted"><strong>PRIMARY CONTACT:</strong> {{ plan.primary_email }}</span>
-              <span class="muted"><strong>ESCALATION CONTACT:</strong> {{ plan.secondary_email or 'NONE SPECIFIED' }}</span>
-              <span class="muted"><strong>INACTIVITY THRESHOLD:</strong> {{ plan.inactivity_days }} DAYS</span>
-              <span class="muted"><strong>LAST CHECK-IN:</strong> {{ plan.last_activity.strftime('%Y-%m-%d %H:%M') }}</span>
+            <div class="plan-actions">
+              {% if plan.status != 'executed' %}
+                <form method="POST" action="{{ url_for('heartbeat', plan_id=plan.id) }}" style="display:inline;">
+                  <button type="submit" class="btn btn-sm btn-cyan">Heartbeat Check-In</button>
+                </form>
+                <form method="POST" action="{{ url_for('escalate_plan', plan_id=plan.id) }}" style="display:inline;">
+                  <button type="submit" class="btn btn-sm btn-red">Escalate Now</button>
+                </form>
+              {% endif %}
+              <a href="{{ url_for('view_plan', plan_id=plan.id) }}" class="btn btn-sm btn-gold">Inspect Vault</a>
             </div>
           </div>
         {% endfor %}
-        <div style="margin-top: 2rem;">
-          <a href="/run_check" class="btn btn-gold" style="width: 100%; text-align: center; padding: 1rem;">
-            [ RUN S.H.I.E.L.D. INACTIVITY DIAGNOSTIC ]
-          </a>
-        </div>
       {% else %}
-        <div style="text-align: center; padding: 3rem 1rem; background: rgba(0,0,0,0.4); border-radius: 6px; border: 1px dashed var(--border);">
-          <p style="font-family: var(--font-tech); font-size: 1.2rem; color: var(--gold);">NO ACTIVE DIRECTIVES DETECTED IN VAULT.</p>
-          <p style="color: var(--muted);">Initialize your first digital succession directive to protect your digital assets.</p>
-          <a href="/create_plan" class="btn btn-red" style="margin-top: 1rem;">[ CREATE FIRST DIRECTIVE ]</a>
-        </div>
+        <p style="color: var(--muted);">No directives registered yet. Create one to encrypt your succession instructions.</p>
       {% endif %}
     </div>
-    """ + MARVEL_LIVE_JS, plans=plans)
+    """ + MARVEL_LIVE_JS, plans=plans, overdue_plans=overdue_plans)
 
 @app.route('/create_plan', methods=['GET', 'POST'])
 @login_required
 def create_plan():
     if request.method == 'POST':
-        accounts = [
-            {"platform": p, "action": a, "filter": f.strip()}
-            for p, a, f in zip(request.form.getlist('platform[]'), request.form.getlist('action[]'), request.form.getlist('filter[]'))
-            if p and a
-        ]
-        plan_data = {
-            "userName": current_user.name,
-            "accounts": accounts,
-            "createdAt": datetime.utcnow().isoformat()
+        beneficiary_name = request.form.get('beneficiary_name', '').strip()
+        beneficiary_email = request.form.get('beneficiary_email', '').strip()
+        primary_email = request.form.get('primary_email', '').strip().lower()
+        secondary_email = request.form.get('secondary_email', '').strip().lower() or None
+        inactivity_days = int(request.form.get('inactivity_days', 180))
+        secret_notes = request.form.get('secret_notes', '').strip()
+
+        if not beneficiary_name or not primary_email or not secret_notes:
+            flash("Beneficiary name, primary contact email, and vault instructions are required.", "error")
+            return redirect(url_for('create_plan'))
+
+        payload = {
+            "beneficiary_name": beneficiary_name,
+            "beneficiary_email": beneficiary_email,
+            "instructions": secret_notes,
+            "created_by": current_user.email
         }
-        db.session.add(LegacyPlan(
+
+        plan = LegacyPlan(
             user_id=current_user.id,
-            encrypted_data=encrypt_plan(plan_data),
-            primary_email=request.form['primary_email'].strip().lower(),
-            secondary_email=request.form.get('secondary_email', '').strip().lower() or None,
-            inactivity_days=int(request.form['inactivity_days']),
+            encrypted_data=encrypt_plan(payload),
+            primary_email=primary_email,
+            secondary_email=secondary_email,
+            inactivity_days=max(1, inactivity_days),
             last_activity=datetime.utcnow(),
             status="active"
-        ))
+        )
+        db.session.add(plan)
         db.session.commit()
-        flash('DIRECTIVE ENCRYPTED & REGISTERED IN S.H.I.E.L.D. VAULT.', 'success')
+        flash(f"Directive #{plan.id} encrypted and stored in Grant Secure OS.", "success")
         return redirect(url_for('dashboard'))
 
     return render_template_string(BASE_TEMPLATE + """
-    <div class="card">
-      <div class="corner-tag">DIRECTIVE CREATION</div>
-      <h1>INITIALIZE <span class="accent">LEGACY DIRECTIVE</span></h1>
-      <p style="color: var(--muted);">All asset parameters are encrypted with 256-bit symmetric cipher prior to storage.</p>
-
-      <form method="POST" style="margin-top: 2rem;">
-        <h2>Trusted Contact Escalation Path</h2>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
-          <div class="form-group" style="margin: 0;">
-            <label>Primary Trusted Contact (e.g., Pepper Potts)</label>
-            <input name="primary_email" type="email" required placeholder="trusted.primary@example.com">
-          </div>
-          <div class="form-group" style="margin: 0;">
-            <label>Secondary Escalation Contact (e.g., Happy Hogan)</label>
-            <input name="secondary_email" type="email" placeholder="trusted.secondary@example.com">
-            <span class="muted">Alerted if primary contact does not respond within 7 days.</span>
-          </div>
-        </div>
-
+    <div class="card" style="max-width: 680px; margin: 0 auto;">
+      <span class="corner-tag">GRANT INDUSTRIES // NEW DIRECTIVE</span>
+      <h1>ENCRYPT <span class="accent">LEGACY DIRECTIVE</span></h1>
+      <form method="POST">
         <div class="form-group">
-          <label>Inactivity Trigger Threshold (Days)</label>
-          <input name="inactivity_days" type="number" value="180" required min="1" max="3650">
+          <label for="beneficiary_name">Designated Beneficiary Name</label>
+          <input type="text" id="beneficiary_name" name="beneficiary_name" required placeholder="e.g. Morgan Grant">
         </div>
-
-        <h2>Target Digital Assets & Directives</h2>
-        <div id="accounts">
-          <div class="account-block" style="background: rgba(8, 12, 22, 0.7); padding: 1.4rem; border: 1px solid var(--border); border-radius: 6px; margin-bottom: 1rem;">
-            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.2rem;">
-              <div class="form-group" style="margin: 0;">
-                <label>Platform / Service</label>
-                <select name="platform[]">
-                  <option>WhatsApp</option>
-                  <option>Discord</option>
-                  <option>X (Twitter)</option>
-                  <option>Threads</option>
-                  <option>Instagram</option>
-                  <option>Google Drive / Photos</option>
-                  <option>GitHub / Code Repos</option>
-                  <option>LinkedIn</option>
-                </select>
-              </div>
-              <div class="form-group" style="margin: 0;">
-                <label>Action Directive</label>
-                <select name="action[]">
-                  <option>Delete Account & Wipe Data</option>
-                  <option>Transfer to Trusted Contact</option>
-                  <option>Archive Privately in Secure Vault</option>
-                </select>
-              </div>
-              <div class="form-group" style="margin: 0;">
-                <label>Scope / Filter (Optional)</label>
-                <input name="filter[]" placeholder="e.g., Specific Folder, Chats, or All">
-              </div>
-            </div>
-          </div>
+        <div class="form-group">
+          <label for="beneficiary_email">Beneficiary Email (Optional)</label>
+          <input type="email" id="beneficiary_email" name="beneficiary_email" placeholder="beneficiary@example.com">
         </div>
-
-        <button type="button" onclick="addRow()" class="btn btn-cyan" style="margin-bottom: 2rem;">
-          + ADD ANOTHER ASSET DIRECTIVE
-        </button>
-        <br>
-        <button type="submit" class="btn btn-red" style="width: 100%; padding: 1.1rem; font-size: 1.15rem;">
-          [ ENCRYPT & COMMIT DIRECTIVE TO VAULT ]
-        </button>
+        <div class="form-group">
+          <label for="primary_email">Tier-1 Escalation Contact Email</label>
+          <input type="email" id="primary_email" name="primary_email" required placeholder="trusted.contact1@example.com">
+        </div>
+        <div class="form-group">
+          <label for="secondary_email">Tier-2 Fallback Contact Email (Optional)</label>
+          <input type="email" id="secondary_email" name="secondary_email" placeholder="trusted.contact2@example.com">
+        </div>
+        <div class="form-group">
+          <label for="inactivity_days">Inactivity Trigger Window (Days)</label>
+          <input type="number" id="inactivity_days" name="inactivity_days" value="180" min="1" max="3650" required>
+          <span class="muted">If no heartbeat check-in occurs within this window, escalation can be triggered.</span>
+        </div>
+        <div class="form-group">
+          <label for="secret_notes">Encrypted Succession Payload & Asset Keys</label>
+          <textarea id="secret_notes" name="secret_notes" rows="6" required placeholder="Enter asset locations, estate instructions, or recovery notes..."></textarea>
+        </div>
+        <button type="submit" class="btn btn-red">Lock & Encrypt Directive</button>
       </form>
     </div>
-
-    <script>
-    function addRow() {
-      const container = document.getElementById('accounts');
-      const div = document.createElement('div');
-      div.className = 'account-block';
-      div.style = "background: rgba(8, 12, 22, 0.7); padding: 1.4rem; border: 1px solid var(--border); border-radius: 6px; margin-bottom: 1rem;";
-      div.innerHTML = `
-        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.2rem;">
-          <div class="form-group" style="margin: 0;">
-            <label>Platform / Service</label>
-            <select name="platform[]">
-              <option>WhatsApp</option>
-              <option>Discord</option>
-              <option>X (Twitter)</option>
-              <option>Threads</option>
-              <option>Instagram</option>
-              <option>Google Drive / Photos</option>
-              <option>GitHub / Code Repos</option>
-              <option>LinkedIn</option>
-            </select>
-          </div>
-          <div class="form-group" style="margin: 0;">
-            <label>Action Directive</label>
-            <select name="action[]">
-              <option>Delete Account & Wipe Data</option>
-              <option>Transfer to Trusted Contact</option>
-              <option>Archive Privately in Secure Vault</option>
-            </select>
-          </div>
-          <div class="form-group" style="margin: 0;">
-            <label>Scope / Filter (Optional)</label>
-            <input name="filter[]" placeholder="e.g., Specific Folder, Chats, or All">
-          </div>
-        </div>
-      `;
-      container.appendChild(div);
-    }
-    </script>
     """ + MARVEL_LIVE_JS)
 
-@app.route('/run_check')
+@app.route('/plan/<int:plan_id>/heartbeat', methods=['POST'])
 @login_required
-def run_check():
-    plans = LegacyPlan.query.filter_by(user_id=current_user.id).all()
-    results = []
-    for plan in plans:
-        days_inactive = (datetime.utcnow() - plan.last_activity).days
-        if plan.status == "active" and days_inactive >= plan.inactivity_days:
-            token = secrets.token_urlsafe(32)
-            plan.confirmation_token = token
-            plan.status = "pending_verification"
-            plan.contact_attempted = "primary"
-            plan.verification_sent_at = datetime.utcnow()
-            db.session.commit()
-            results.append({
-                "plan_id": plan.id,
-                "action": "TRIGGERED // THRESHOLD EXCEEDED",
-                "contact": plan.primary_email,
-                "type": "Primary Trusted Contact",
-                "token": token
-            })
-        elif plan.status == "pending_verification":
-            days_since = (datetime.utcnow() - plan.verification_sent_at).days if plan.verification_sent_at else 0
-            if plan.contact_attempted == "primary" and days_since >= 7 and plan.secondary_email:
-                token = secrets.token_urlsafe(32)
-                plan.confirmation_token = token
-                plan.contact_attempted = "secondary"
-                plan.verification_sent_at = datetime.utcnow()
-                db.session.commit()
-                results.append({
-                    "plan_id": plan.id,
-                    "action": "ESCALATED // 7-DAY WINDOW LAPSED",
-                    "contact": plan.secondary_email,
-                    "type": "Secondary Escalation Contact",
-                    "token": token
-                })
-            else:
-                ct = "Primary" if plan.contact_attempted == "primary" else "Secondary"
-                ce = plan.primary_email if plan.contact_attempted == "primary" else plan.secondary_email
-                results.append({
-                    "plan_id": plan.id,
-                    "action": f"AWAITING_{ct.upper()}_VERIFICATION",
-                    "contact": ce,
-                    "type": f"{ct} Contact",
-                    "token": plan.confirmation_token
-                })
-        elif plan.status == "active":
-            results.append({
-                "plan_id": plan.id,
-                "action": "HEARTBEAT NORMAL // ACTIVE",
-                "days_left": plan.inactivity_days - days_inactive
-            })
+def heartbeat(plan_id):
+    plan = db.session.get(LegacyPlan, plan_id)
+    if not plan or plan.user_id != current_user.id:
+        flash("Directive not found or unauthorized.", "error")
+        return redirect(url_for('dashboard'))
+    plan.last_activity = datetime.utcnow()
+    plan.status = "active"
+    plan.confirmation_token = None
+    plan.contact_attempted = "primary"
+    plan.verification_sent_at = None
+    db.session.commit()
+    flash(f"Heartbeat confirmed for Directive #{plan.id}. Inactivity timer reset.", "success")
+    return redirect(url_for('dashboard'))
 
-    return render_template_string(BASE_TEMPLATE + """
-    <div class="card">
-      <div class="corner-tag">S.H.I.E.L.D. DIAGNOSTIC</div>
-      <h1>INACTIVITY <span class="accent">DIAGNOSTIC REPORT</span></h1>
-      {% if results %}
-        {% for r in results %}
-          <div class="plan-row" style="flex-direction: column; align-items: flex-start;">
-            <div style="width: 100%; display: flex; justify-content: space-between;">
-              <strong style="color: #ffffff; font-size: 1.15rem;">[ DIRECTIVE #{{ r.plan_id }} ]</strong>
-              <span class="badge badge-active">{{ r.action }}</span>
-            </div>
-            {% if r.get('days_left') is not none %}
-              <div style="margin-top: 0.8rem;">
-                <span class="muted" style="color: var(--arc-blue);">DAYS REMAINING UNTIL TRIGGER: {{ r.days_left }} DAYS</span>
-              </div>
-            {% endif %}
-            {% if r.get('contact') %}
-              <div style="background: rgba(230, 36, 41, 0.08); padding: 1.2rem; width: 100%; margin-top: 1rem; border: 1px solid var(--border); border-radius: 6px;">
-                <p style="color: #ffffff; margin-bottom: 0.6rem;">
-                  <strong>DISPATCH DESTINATION ({{ r.type }}):</strong> {{ r.contact }}
-                </p>
-                <p class="muted" style="margin-bottom: 1rem;">
-                  A secure one-time verification link has been generated for this contact.
-                </p>
-                <a href="/verify/{{ r.token }}" class="btn btn-red" style="width: 100%; text-align: center; padding: 0.9rem;">
-                  [ SIMULATE CONTACT VERIFICATION & 2FA ]
-                </a>
-              </div>
-            {% endif %}
-          </div>
-        {% endfor %}
-      {% else %}
-        <p>No active directives to diagnose.</p>
-      {% endif %}
-      <a href="/dashboard" class="btn" style="margin-top: 1.5rem;">[ RETURN TO DASHBOARD ]</a>
-    </div>
-    """ + MARVEL_LIVE_JS, results=results)
+@app.route('/plan/<int:plan_id>/escalate', methods=['POST'])
+@login_required
+def escalate_plan(plan_id):
+    plan = db.session.get(LegacyPlan, plan_id)
+    if not plan or plan.user_id != current_user.id:
+        flash("Directive not found or unauthorized.", "error")
+        return redirect(url_for('dashboard'))
+
+    if plan.status == "executed":
+        flash("Directive has already been executed.", "error")
+        return redirect(url_for('dashboard'))
+
+    # If already pending on primary and secondary exists, escalate to secondary
+    if plan.status == "pending_verification" and plan.contact_attempted == "primary" and plan.secondary_email:
+        plan.contact_attempted = "secondary"
+    else:
+        plan.contact_attempted = "primary"
+
+    plan.status = "pending_verification"
+    plan.confirmation_token = secrets.token_urlsafe(24)
+    plan.verification_sent_at = datetime.utcnow()
+    db.session.commit()
+
+    target_email = plan.secondary_email if plan.contact_attempted == "secondary" else plan.primary_email
+    flash(f"Escalation token dispatched to {plan.contact_attempted} contact ({target_email}) for Directive #{plan.id}.", "success")
+    return redirect(url_for('dashboard'))
 
 @app.route('/verify/<token>', methods=['GET', 'POST'])
-def verify_documents(token):
+def verify_escalation(token):
     plan = LegacyPlan.query.filter_by(confirmation_token=token).first()
     if not plan:
-        return "Invalid token", 404
-    if plan.status in ("confirmed", "executed"):
-        return "Directive has already been executed.", 400
+        flash("Invalid or expired verification token.", "error")
+        return redirect(url_for('index'))
 
     if request.method == 'POST':
         id_file = request.files.get('id_document')
-        death_file = request.files.get('death_certificate')
+        cert_file = request.files.get('death_certificate')
+        if not id_file or not id_file.filename or not cert_file or not cert_file.filename:
+            flash("Both an ID document and a death/status certificate are required for 2FA verification.", "error")
+            return redirect(url_for('verify_escalation', token=token))
 
-        if id_file and death_file:
-            id_filename = secure_filename(id_file.filename)
-            death_filename = secure_filename(death_file.filename)
-            id_file.save(os.path.join(app.config['UPLOAD_FOLDER'], id_filename))
-            death_file.save(os.path.join(app.config['UPLOAD_FOLDER'], death_filename))
-
-            plan.id_document = id_filename
-            plan.death_certificate = death_filename
-            plan.verification_status = "documents_uploaded"
-            db.session.commit()
-            flash('LEGAL DOCUMENTS VERIFIED BY S.H.I.E.L.D. PROTOCOL.', 'success')
-            return redirect(url_for('execute_plan', token=token))
-        else:
-            flash('SECURITY ERROR: Both identification and death certificate documents are required.', 'error')
+        plan.id_document = save_uploaded_file(id_file, f"id_p{plan.id}")
+        plan.death_certificate = save_uploaded_file(cert_file, f"cert_p{plan.id}")
+        plan.verification_status = "verified"
+        plan.status = "executed"
+        plan.confirmation_token = None
+        db.session.commit()
+        flash(f"2FA documents verified. Directive #{plan.id} is now EXECUTED and unlocked.", "success")
+        return redirect(url_for('view_plan', plan_id=plan.id))
 
     return render_template_string(BASE_TEMPLATE + """
-    <div class="card" style="max-width: 650px; margin: 0 auto;">
-      <div class="corner-tag">2FA LEGAL AUDIT</div>
-      <h1>S.H.I.E.L.D. <span class="accent">VERIFICATION</span></h1>
-      <p style="font-family: var(--font-tech); color: var(--gold); font-size: 1.1rem;">
-        // LEVEL 7 DIRECTIVE RELEASE: SUBMIT REQUIRED CREDENTIALS
+    <div class="card" style="max-width: 620px; margin: 0 auto;">
+      <span class="corner-tag">2FA VERIFICATION GATE</span>
+      <h1>DOCUMENT <span class="accent">VERIFICATION</span></h1>
+      <p>
+        Directive <strong>#{{ plan.id }}</strong> is currently awaiting two-factor verification via
+        <strong>{{ plan.contact_attempted|upper }}</strong> contact. Upload both required documents to execute release.
       </p>
-      <p style="color: var(--muted); font-size: 0.95rem;">
-        Before any encrypted digital assets are released or wiped, S.H.I.E.L.D. legal protocol requires cryptographic proof of authority and certificate of demise.
-      </p>
-
-      <form method="POST" enctype="multipart/form-data" style="margin-top: 2rem;">
+      <form method="POST" enctype="multipart/form-data">
         <div class="form-group">
-          <label>1. Authorized Contact Identification (Passport / Aadhaar / Driver License)</label>
-          <input type="file" name="id_document" accept="image/*,.pdf" required style="border: 1px dashed var(--marvel-red); padding: 1.2rem;">
+          <label for="id_document">Verifier Government / Operator ID</label>
+          <input type="file" id="id_document" name="id_document" required>
         </div>
         <div class="form-group">
-          <label>2. Certified Certificate of Demise (Official Document)</label>
-          <input type="file" name="death_certificate" accept="image/*,.pdf" required style="border: 1px dashed var(--marvel-red); padding: 1.2rem;">
+          <label for="death_certificate">Official Status / Death Certificate</label>
+          <input type="file" id="death_certificate" name="death_certificate" required>
         </div>
-        <button type="submit" class="btn btn-red" style="width: 100%; padding: 1.1rem; margin-top: 1rem;">
-          [ SUBMIT DOCUMENTS & EXECUTE DIRECTIVE ]
-        </button>
+        <button type="submit" class="btn btn-gold" style="width: 100%;">Submit 2FA & Execute Directive</button>
       </form>
-      <p class="muted" style="margin-top: 1.5rem; text-align: center;">
-        All uploaded files are stored in an encrypted compliance vault.
-      </p>
     </div>
-    """ + MARVEL_LIVE_JS)
+    """ + MARVEL_LIVE_JS, plan=plan)
 
-@app.route('/execute/<token>')
-def execute_plan(token):
-    plan = LegacyPlan.query.filter_by(confirmation_token=token).first()
-    if not plan:
-        return "Invalid token", 404
-    if plan.status in ("confirmed", "executed"):
-        return "Directive has already been executed.", 400
+@app.route('/plan/<int:plan_id>')
+@login_required
+def view_plan(plan_id):
+    plan = db.session.get(LegacyPlan, plan_id)
+    if not plan or plan.user_id != current_user.id:
+        flash("Directive not found or unauthorized.", "error")
+        return redirect(url_for('dashboard'))
 
-    plan.status = "executed"
-    plan.verification_status = "approved"
-    db.session.commit()
-
-    data = decrypt_plan(plan.encrypted_data)
-    rc = plan.primary_email if plan.contact_attempted == 'primary' else plan.secondary_email
-    rep = f"""============================================================
-STARK INDUSTRIES & S.H.I.E.L.D. DIGITAL EXECUTION REPORT
-============================================================
-AGENT: {data.get('userName')}
-CONTACT AUTHORIZED: {rc}
-TIMESTAMP: {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')}
-STATUS: DIRECTIVE COMPLETE & EXECUTED
-LEGAL COMPLIANCE: Identification & Death Certificate Approved
-CIPHER INTEGRITY: Verified
-
-DIRECTIVE ACTIONS EXECUTED:
-"""
-    for i, a in enumerate(data.get('accounts', []), 1):
-        rep += f"\n  [{i}] PLATFORM: {a['platform']}\n      ACTION:   {a['action']}\n      SCOPE:    {a.get('filter') or 'FULL ACCOUNT'}\n      STATUS:   DISPATCHED & COMPLETED"
-
-    rep += f"\n\n============================================================\nEND OF TRANSMISSION // PROTOCOL TERMINATED\n============================================================"
+    decrypted = decrypt_plan(plan.encrypted_data)
+    formatted_payload = json.dumps(decrypted, indent=2)
 
     return render_template_string(BASE_TEMPLATE + """
     <div class="card">
-      <div class="corner-tag">EXECUTION COMPLETE</div>
-      <h1 style="color: var(--gold);">DIRECTIVE <span class="accent">EXECUTED</span></h1>
-      <p style="color: #ffffff; font-size: 1.05rem;">
-        Legal documents successfully audited. Encrypted directives decrypted and executed.
+      <span class="corner-tag">DIRECTIVE #{{ plan.id }} // {{ plan.status|upper }}</span>
+      <h1>VAULT <span class="accent">INSPECTION</span></h1>
+      <p>
+        <strong>Status:</strong> <span class="badge badge-{{ plan.status }}">{{ plan.status }}</span>  | 
+        <strong>2FA Status:</strong> {{ plan.verification_status|upper }}
       </p>
-      <pre>{{ report }}</pre>
-      <a href="/dashboard" class="btn btn-gold" style="margin-top: 2rem;">[ RETURN TO DASHBOARD ]</a>
+      {% if plan.id_document or plan.death_certificate %}
+        <p class="muted">
+          Uploaded Docs — ID: <code>{{ plan.id_document or 'None' }}</code> | Certificate: <code>{{ plan.death_certificate or 'None' }}</code>
+        </p>
+      {% endif %}
+
+      <h2>Decrypted Payload</h2>
+      <pre>{{ formatted_payload }}</pre>
+
+      <div style="margin-top: 1.5rem;">
+        <a href="/dashboard" class="btn btn-cyan">← Back to Dashboard</a>
+      </div>
     </div>
-    """ + MARVEL_LIVE_JS, report=rep)
+    """ + MARVEL_LIVE_JS, plan=plan, formatted_payload=formatted_payload)
 
-# ============================================================
-# INITIALIZATION & PORT DETECTION
-# ============================================================
-
-with app.app_context():
-    db.create_all()
-    # Auto-migrate columns if table existed from an earlier schema
-    try:
-        from sqlalchemy import text
-        with db.engine.connect() as _conn:
-            _res = _conn.execute(text("PRAGMA table_info(legacy_plan)"))
-            _cols = {row[1] for row in _res}
-            _cols_to_add = {
-                "primary_email": "VARCHAR(150)",
-                "secondary_email": "VARCHAR(150)",
-                "contact_attempted": "VARCHAR(20) DEFAULT 'primary'",
-                "verification_sent_at": "DATETIME",
-                "id_document": "VARCHAR(200)",
-                "death_certificate": "VARCHAR(200)",
-                "verification_status": "VARCHAR(50) DEFAULT 'pending'"
-            }
-            for _c, _ctype in _cols_to_add.items():
-                if _c not in _cols:
-                    _conn.execute(text(f"ALTER TABLE legacy_plan ADD COLUMN {_c} {_ctype}"))
-            _conn.commit()
-    except Exception as _e:
-        print(f"[Notice] DB schema check: {_e}")
-
-if __name__ == "__main__":
-    import socket
-
-    def is_port_available(p):
-        try:
-            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-                s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-                s.bind(('0.0.0.0', p))
-                return True
-        except OSError:
-            return False
-
-    if os.environ.get("PORT"):
-        port = int(os.environ.get("PORT"))
-    elif is_port_available(5000):
-        port = 5000
-    elif is_port_available(5001):
-        port = 5001
-        print("\n[Notice] Port 5000 is occupied (e.g. by macOS AirPlay Receiver). Switched to port 5001.")
-    else:
-        port = 8080
-
-    print("\n=======================================================")
-    print("  MARVEL PROTOCOL // STARK SECURE OS IS LIVE!")
-    print(f"  👉 http://127.0.0.1:{port} (or http://localhost:{port})")
-    print("=======================================================\n")
-    app.run(host="0.0.0.0", port=port, debug=False)
+if __name__ == '__main__':
+    with app.app_context():
+        db.create_all()
+    app.run(debug=True)
