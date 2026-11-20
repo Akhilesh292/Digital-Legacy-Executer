@@ -2,7 +2,7 @@
 MARVEL PROTOCOL: DIGITAL LEGACY DIRECTIVE
 ============================================================
 Autonomous Post-Mortem Asset Protection & Succession Protocol
-Theme: Marvel / Stark Industries / S.H.I.E.L.D. Level 7 Clearance
+Theme: Marvel / Grant Industries / S.H.I.E.L.D. Level 7 Clearance
 Features:
 - Upgraded Live Marvel Animated Canvas Background:
   * Luminous Stark Arc Reactor Core with Triangular Plasma Core & Rotating Rings
@@ -1072,8 +1072,8 @@ MARVEL_LIVE_JS = """
 def index():
     return render_template_string(BASE_TEMPLATE + """
     <div class="card" style="text-align: center; padding: 4rem 2.5rem;">
-      <div class="corner-tag">STARK IND // DIRECTIVE 838</div>
-      <h1>STARK INDUSTRIES <span class="accent">LEGACY DIRECTIVE</span></h1>
+      <div class="corner-tag">GRANT IND // DIRECTIVE 838</div>
+      <h1>GRANT INDUSTRIES <span class="accent">LEGACY DIRECTIVE</span></h1>
       <p style="font-family: var(--font-tech); font-size: 1.25rem; color: var(--gold); letter-spacing: 1.5px; text-transform: uppercase;">
         // S.H.I.E.L.D. LEVEL 7 AUTONOMOUS ASSET SUCCESSION PROTOCOL
       </p>
@@ -1128,7 +1128,7 @@ def signup():
     <div class="card" style="max-width: 540px; margin: 0 auto;">
       <div class="corner-tag">REGISTRATION // FORM 104</div>
       <h1>AGENT <span class="accent">CLEARANCE</span></h1>
-      <p style="color: var(--muted); font-size: 0.92rem;">Register your cryptographic credentials into the Stark Legacy Network.</p>
+      <p style="color: var(--muted); font-size: 0.92rem;">Register your cryptographic credentials into the Grant Legacy Network.</p>
       <form method="POST" style="margin-top: 1.8rem;">
         <div class="form-group">
           <label>Agent Codename / Full Name</label>
@@ -1136,7 +1136,7 @@ def signup():
         </div>
         <div class="form-group">
           <label>Secure Comms Email</label>
-          <input name="email" type="email" required placeholder="agent@starkindustries.com">
+          <input name="email" type="email" required placeholder="agent@grantindustries.com">
         </div>
         <div class="form-group">
           <label>Biometric Passcode / Password (Min 6 chars)</label>
@@ -1168,7 +1168,7 @@ def login():
       <form method="POST" style="margin-top: 1.8rem;">
         <div class="form-group">
           <label>Comms Email Address</label>
-          <input name="email" type="email" required placeholder="agent@starkindustries.com">
+          <input name="email" type="email" required placeholder="agent@grantindustries.com">
         </div>
         <div class="form-group">
           <label>Biometric Passcode</label>
@@ -1534,7 +1534,7 @@ def execute_plan(token):
     data = decrypt_plan(plan.encrypted_data)
     rc = plan.primary_email if plan.contact_attempted == 'primary' else plan.secondary_email
     rep = f"""============================================================
-STARK INDUSTRIES & S.H.I.E.L.D. DIGITAL EXECUTION REPORT
+GRANT INDUSTRIES & S.H.I.E.L.D. DIGITAL EXECUTION REPORT
 ============================================================
 AGENT: {data.get('userName')}
 CONTACT AUTHORIZED: {rc}
