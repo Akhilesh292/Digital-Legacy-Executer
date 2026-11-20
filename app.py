@@ -668,7 +668,7 @@ BASE_TEMPLATE = """
   <nav>
     <a href="/" class="brand-wrap">
       <span class="marvel-badge">MARVEL</span>
-      <span class="brand-title">STARK SECURE OS</span>
+      <span class="brand-title">GRANT SECURE OS</span>
       <span class="shield-badge">LEVEL 7</span>
     </a>
     <div class="nav-links">
