@@ -5,7 +5,7 @@ Autonomous Post-Mortem Asset Protection & Succession Protocol
 Theme: Marvel / Grant Industries / S.H.I.E.L.D. Level 7 Clearance
 Features:
 - Upgraded Live Marvel Animated Canvas Background:
-  - Luminous Grant Arc Reactor Core with Triangular Plasma Core & Rotating Rings
+  - Luminous Stark Arc Reactor Core with Triangular Plasma Core & Rotating Rings
   - Interactive Doctor Strange Eldritch Mandala & Sling-Ring Sparks on Cursor
   - Click-triggered Repulsor / Infinity Shockwave Pulse
   - 6 Infinity Stone Energy Nodes + Quantum Nebula + S.H.I.E.L.D. Radar Sweep
@@ -83,7 +83,6 @@ def resolve_database_uri() -> str:
         if db_url.startswith("postgres://"):
             return db_url.replace("postgres://", "postgresql://", 1)
         return db_url
-    # Store SQLite inside /tmp on Render if no DATABASE_URL is configured
     if os.environ.get("RENDER"):
         return "sqlite:////tmp/legacy.db"
     return "sqlite:///legacy.db"
@@ -93,7 +92,7 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get("SECRET_KEY", secrets.token_hex(32))
 app.config['SQLALCHEMY_DATABASE_URI'] = resolve_database_uri()
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16 MB upload cap
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 
 UPLOAD_FOLDER = '/tmp/uploads' if os.environ.get("RENDER") else 'uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -151,7 +150,6 @@ def init_db():
         db.create_all()
 
 
-# Run on module import so Gunicorn on Render always initializes tables
 init_db()
 
 
@@ -781,7 +779,7 @@ BASE_TEMPLATE = """
 MARVEL_LIVE_JS = """
   <!-- S.H.I.E.L.D. Bottom Telemetry HUD -->
   <div class="hud-footer">
-    <div><span class="hud-pulse-dot"></span>GRANT AI // QUANTUM ENCRYPTION CORE ONLINE</div>
+    <div><span class="hud-pulse-dot"></span>J.A.R.V.I.S. // QUANTUM ENCRYPTION CORE ONLINE</div>
     <div id="hud-coords">SECTOR 7G // ARC OUTPUT: 3.2 GJ/S</div>
   </div>
 
@@ -891,7 +889,7 @@ MARVEL_LIVE_JS = """
     ctx.fillRect(0, 0, w, h);
   }
 
-  function drawGrantArcReactor() {
+  function drawStarkArcReactor() {
     const px = (mouse.x - w * 0.5) * 0.025;
     const py = (mouse.y - h * 0.5) * 0.025;
     const cx = w * 0.5 + px;
@@ -1023,7 +1021,7 @@ MARVEL_LIVE_JS = """
     ctx.clearRect(0, 0, w, h);
 
     drawCosmicNebula();
-    drawGrantArcReactor();
+    drawStarkArcReactor();
 
     for (let i = 0; i < particles.length; i++) {
       for (let j = i + 1; j < particles.length; j++) {
@@ -1179,7 +1177,7 @@ def signup():
       <form method="POST">
         <div class="form-group">
           <label for="name">Operator Full Name</label>
-          <input type="text" id="name" name="name" required placeholder="e.g. Elena Grant">
+          <input type="text" id="name" name="name" required placeholder="e.g. Tony Stark">
         </div>
         <div class="form-group">
           <label for="email">Command Email</label>
@@ -1344,7 +1342,7 @@ def create_plan():
       <form method="POST">
         <div class="form-group">
           <label for="beneficiary_name">Designated Beneficiary Name</label>
-          <input type="text" id="beneficiary_name" name="beneficiary_name" required placeholder="e.g. Morgan Grant">
+          <input type="text" id="beneficiary_name" name="beneficiary_name" required placeholder="e.g. Pepper Potts">
         </div>
         <div class="form-group">
           <label for="beneficiary_email">Beneficiary Email (Optional)</label>
