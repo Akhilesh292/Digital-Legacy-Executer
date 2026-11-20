@@ -57,7 +57,8 @@ def encrypt_plan(data): return fernet.encrypt(json.dumps(data).encode()).decode(
 def decrypt_plan(enc): return json.loads(fernet.decrypt(enc.encode()).decode())
 
 BASE = """
-<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>GRANT Security</title>
+<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GRANT Security</title>
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
 <style>
 :root { --bg: #05080f; --panel: rgba(10,15,25,0.85); --red: #e23636; --gold: #f0b429; --blue: #00e5ff; --text: #e6edf3; --muted: #8b949e; --border: #1b222c; --danger: #ff003c; --warn: #ffb000; --mono: 'Share Tech Mono', monospace; --sans: 'Rajdhani', sans-serif; }
@@ -121,7 +122,6 @@ function animate() {
     ctx.fillStyle = 'rgba(5, 8, 15, 0.2)';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     
-    // Draw Arc Reactor Glow
     time += 0.02;
     const pulse = Math.sin(time) * 0.5 + 0.5;
     const gradient = ctx.createRadialGradient(canvas.width/2, canvas.height/2, 0, canvas.width/2, canvas.height/2, 400 + pulse * 100);
@@ -131,7 +131,6 @@ function animate() {
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // Draw Particles
     particles.forEach(p => {
         ctx.fillStyle = p.color;
         ctx.beginPath();
