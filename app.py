@@ -20,6 +20,7 @@ from datetime import datetime, timedelta
 from flask import Flask, render_template_string, request, redirect, url_for, flash
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.exc import OperationalError
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 
@@ -131,9 +132,20 @@ class LegacyPlan(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     user = db.relationship('User', backref='plans')
 
+with app.app_context():
+    db.create_all()
+
 @login_manager.user_loader
 def load_user(user_id):
-    return db.session.get(User, int(user_id))
+    try:
+        return db.session.get(User, int(user_id))
+    except OperationalError:
+        db.session.rollback()
+        db.create_all()
+        try:
+            return db.session.get(User, int(user_id))
+        except OperationalError:
+            return None
 
 def encrypt_plan(data: dict) -> str:
     return fernet.encrypt(json.dumps(data).encode()).decode()
@@ -1103,6 +1115,4 @@ def index():
     """ + MARVEL_LIVE_JS)
 
 if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()
     app.run(debug=True)
