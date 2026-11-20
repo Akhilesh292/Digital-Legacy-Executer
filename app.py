@@ -20,6 +20,7 @@ from datetime import datetime, timedelta
 from flask import Flask, render_template_string, request, redirect, url_for, flash
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.exc import OperationalError
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 
@@ -75,23 +76,35 @@ except ImportError:
             keystream = self._keystream(iv, len(ciphertext))
             return bytes(a ^ b for a, b in zip(ciphertext, keystream))
 
+
+def resolve_database_uri() -> str:
+    db_url = os.environ.get("DATABASE_URL")
+    if db_url:
+        if db_url.startswith("postgres://"):
+            return db_url.replace("postgres://", "postgresql://", 1)
+        return db_url
+    # Store SQLite inside /tmp on Render if no DATABASE_URL is configured
+    if os.environ.get("RENDER"):
+        return "sqlite:////tmp/legacy.db"
+    return "sqlite:///legacy.db"
+
+
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get("SECRET_KEY", secrets.token_hex(32))
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL", "sqlite:///legacy.db")
+app.config['SQLALCHEMY_DATABASE_URI'] = resolve_database_uri()
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16 MB upload cap
 
-UPLOAD_FOLDER = 'uploads'
+UPLOAD_FOLDER = '/tmp/uploads' if os.environ.get("RENDER") else 'uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-if not os.path.exists(UPLOAD_FOLDER):
-    os.makedirs(UPLOAD_FOLDER)
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 db = SQLAlchemy(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 
-KEY_FILE = "secret.key"
+KEY_FILE = "/tmp/secret.key" if os.environ.get("RENDER") else "secret.key"
 if os.environ.get("FERNET_KEY"):
     FERNET_KEY = os.environ["FERNET_KEY"].encode()
 elif os.path.exists(KEY_FILE):
@@ -132,9 +145,37 @@ class LegacyPlan(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     user = db.relationship('User', backref='plans')
 
+
+def init_db():
+    with app.app_context():
+        db.create_all()
+
+
+# Run on module import so Gunicorn on Render always initializes tables
+init_db()
+
+
 @login_manager.user_loader
 def load_user(user_id):
-    return db.session.get(User, int(user_id))
+    try:
+        return db.session.get(User, int(user_id))
+    except OperationalError:
+        db.session.rollback()
+        init_db()
+        try:
+            return db.session.get(User, int(user_id))
+        except OperationalError:
+            return None
+
+
+@app.before_request
+def ensure_tables():
+    try:
+        db.session.execute(db.select(User.id).limit(1))
+    except OperationalError:
+        db.session.rollback()
+        init_db()
+
 
 def encrypt_plan(data: dict) -> str:
     return fernet.encrypt(json.dumps(data).encode()).decode()
@@ -759,10 +800,8 @@ MARVEL_LIVE_JS = """
   resize();
   window.addEventListener('resize', resize);
 
-  // Mouse state for Eldritch Mandala & Parallax
   const mouse = { x: w * 0.5, y: h * 0.5, active: false };
 
-  // Infinity Stone Palette (Space, Reality, Power, Mind, Time, Soul)
   const infinityStones = [
     { name: "REALITY", r: 230, g: 36,  b: 41  },
     { name: "SPACE",   r: 0,   g: 240, b: 255 },
@@ -772,7 +811,6 @@ MARVEL_LIVE_JS = """
     { name: "SOUL",    r: 255, g: 125, b: 15  }
   ];
 
-  // 1. Cosmic Infinity Energy Particles
   const particles = [];
   const TOTAL_PARTICLES = Math.min(110, Math.floor(window.innerWidth / 12));
   for (let i = 0; i < TOTAL_PARTICLES; i++) {
@@ -790,7 +828,6 @@ MARVEL_LIVE_JS = """
     });
   }
 
-  // 2. Doctor Strange Eldritch Sparks & Click Shockwaves
   const sparks = [];
   const shockwaves = [];
 
@@ -819,7 +856,6 @@ MARVEL_LIVE_JS = """
     }
   });
 
-  // Repulsor / Infinity Pulse on Click
   window.addEventListener('click', function(e) {
     const pick = infinityStones[Math.floor(Math.random() * infinityStones.length)];
     shockwaves.push({
@@ -1364,7 +1400,6 @@ def escalate_plan(plan_id):
         flash("Directive has already been executed.", "error")
         return redirect(url_for('dashboard'))
 
-    # If already pending on primary and secondary exists, escalate to secondary
     if plan.status == "pending_verification" and plan.contact_attempted == "primary" and plan.secondary_email:
         plan.contact_attempted = "secondary"
     else:
@@ -1459,6 +1494,5 @@ def view_plan(plan_id):
     """ + MARVEL_LIVE_JS, plan=plan, formatted_payload=formatted_payload)
 
 if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port, debug=False)
